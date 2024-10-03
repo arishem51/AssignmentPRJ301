@@ -1,4 +1,4 @@
-package com.example.scheduling_system.entity;
+package com.example.scheduling_system.models;
 
 import jakarta.persistence.*;
 

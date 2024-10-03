@@ -1,4 +1,4 @@
-package com.example.scheduling_system.controller;
+package com.example.scheduling_system.controllers;
 
 import java.util.List;
 
@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.scheduling_system.entity.Product;
-import com.example.scheduling_system.repository.ProductRepository;
+import com.example.scheduling_system.models.Product;
+import com.example.scheduling_system.repositories.ProductRepository;
 
 @RestController
 @RequestMapping("/api/products")
