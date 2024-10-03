@@ -3,23 +3,21 @@ package com.example.scheduling_system.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "products") // This specifies the name of the table in the database
+@Table(name = "products")
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-generates Product ID
-    private Long id; // Product ID
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(name = "product_name", nullable = false) // Product Name column
+    @Column(name = "product_name", nullable = false)
     private String name;
 
-    @Column(name = "estimated_effort") // Estimated Effort column (per hour)
-    private Double estimatedEffort; // Use Double or Integer depending on your needs
+    @Column(name = "estimated_effort")
+    private Double estimatedEffort;
 
-    @Column(name = "img") // Column for image
-    private String img; // Path or URL to the image file
-
-    // Constructors, Getters, and Setters
+    @Column(name = "img")
+    private String img;
 
     public Product() {
     }
@@ -30,7 +28,6 @@ public class Product {
         this.img = img;
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }
