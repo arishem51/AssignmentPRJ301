@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'login',
@@ -31,33 +32,27 @@ import { MatButtonModule } from '@angular/material/button';
       <h1>Login</h1>
       <mat-form-field appearance="fill" class="full-width">
         <mat-label>Username</mat-label>
-        <input
-          matInput
-          [(ngModel)]="input.username"
-          (ngModelChange)="onUsernameChange($event)"
-        />
+        <input matInput [(ngModel)]="input.username" />
       </mat-form-field>
       <mat-form-field appearance="fill" class="full-width">
         <mat-label>Password</mat-label>
-        <input
-          matInput
-          [(ngModel)]="input.password"
-          (ngModelChange)="onPasswordChange($event)"
-          type="password"
-        />
+        <input matInput [(ngModel)]="input.password" type="password" />
       </mat-form-field>
-      <button mat-raised-button color="primary" class="full-width">
+      <button
+        mat-raised-button
+        color="primary"
+        class="full-width"
+        (click)="onLoginClick()"
+      >
         Login
       </button>
     </div>
   `,
 })
 export class Login {
+  constructor(private authService: AuthService) {}
   input = { username: '', password: '' };
-  onPasswordChange(value: string) {
-    console.log(value);
-  }
-  onUsernameChange(value: string) {
-    console.log(value);
+  onLoginClick() {
+    this.authService.login(this.input.username, this.input.password);
   }
 }
