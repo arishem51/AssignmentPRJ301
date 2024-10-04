@@ -60,6 +60,9 @@ import { MatButton } from '@angular/material/button';
         top: 68px;
         padding: 0 24px 0 12px;
       }
+      .content {
+        height: calc(100vh - 68px);
+      }
     `,
   ],
   template: `
@@ -77,7 +80,7 @@ import { MatButton } from '@angular/material/button';
         </mat-nav-list>
       </mat-sidenav>
 
-      <mat-sidenav-content>
+      <mat-sidenav-content class="content">
         <router-outlet></router-outlet>
       </mat-sidenav-content>
     </mat-sidenav-container>

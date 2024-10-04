@@ -8,3 +8,10 @@ export type UserResponse = {
   token: string;
   username: string;
 };
+
+export type ProductResponse = {
+  id: number;
+  name: string;
+  estimatedEffort: number;
+  img: string;
+};
