@@ -47,7 +47,8 @@ public class SecurityConfig {
         return authProvider;
     }
 
-    private JwtAuthenFilter authenticationJwtFilter() {
+    @Bean
+    public JwtAuthenFilter authenticationJwtFilter() {
         return new JwtAuthenFilter();
     }
 
