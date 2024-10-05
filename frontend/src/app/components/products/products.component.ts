@@ -1,13 +1,29 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ProductsService } from '../../services/products.service';
 import { PaginateResponse, ProductResponse } from '../../types';
 import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
+import { MatDialog } from '@angular/material/dialog';
+import { AddProductDialog } from './addProductDialog.component';
+import { DeleteProductDialog } from './deleteProductDialog.component';
 
 @Component({
   standalone: true,
-  imports: [MatTableModule, MatProgressSpinnerModule, MatButtonModule],
+  imports: [
+    MatTableModule,
+    MatProgressSpinnerModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    MatButtonModule,
+    MatIconModule,
+  ],
   styles: [
     `
       .container {
@@ -99,6 +115,11 @@ import { MatButtonModule } from '@angular/material/button';
       td {
         padding: 12px 0;
       }
+      .search-container {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
     `,
   ],
   template: `
@@ -109,7 +130,13 @@ import { MatButtonModule } from '@angular/material/button';
     }@else{
     <div class="container">
       <h5 style="text-align:center">Products</h5>
-      <button mat-flat-button>Add</button>
+      <div class="search-container">
+        <button mat-flat-button (click)="openMutateProduct()">Add</button>
+        <mat-form-field class="example-form-field">
+          <mat-label>Search</mat-label>
+          <input matInput type="text" [(ngModel)]="searchProduct" />
+        </mat-form-field>
+      </div>
       <table mat-table [dataSource]="products" class="mat-elevation-z8">
         <ng-container matColumnDef="id">
           <th mat-header-cell *matHeaderCellDef>No.</th>
@@ -135,6 +162,20 @@ import { MatButtonModule } from '@angular/material/button';
           </td>
         </ng-container>
 
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let element">
+            <div style="display:flex; gap:8px;justify-content:center">
+              <button (click)="onUpdateProduct(element)" mat-flat-button>
+                Update
+              </button>
+              <button mat-raised-button (click)="openDeleteProduct(element.id)">
+                Delete
+              </button>
+            </div>
+          </td>
+        </ng-container>
+
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>
@@ -146,9 +187,32 @@ export class Products implements OnInit {
   loading = true;
   queryData?: PaginateResponse<ProductResponse>['data'] = undefined;
   products: ProductResponse[] = [];
+  searchProduct = '';
+  readonly dialog = inject(MatDialog);
 
   constructor(private productService: ProductsService) {}
-  displayedColumns: string[] = ['id', 'name', 'estimatedEffort', 'img'];
+  displayedColumns: string[] = [
+    'id',
+    'name',
+    'estimatedEffort',
+    'img',
+    'actions',
+  ];
+  onUpdateProduct(product: ProductResponse) {
+    this.dialog.open(AddProductDialog, {
+      data: product,
+    });
+  }
+
+  openMutateProduct() {
+    this.dialog.open(AddProductDialog, {
+      data: {},
+    });
+  }
+
+  openDeleteProduct(id: string) {
+    this.dialog.open(DeleteProductDialog, { data: { id } });
+  }
 
   ngOnInit(): void {
     this.productService.getProducts().subscribe({

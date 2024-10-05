@@ -11,4 +11,18 @@ export class ProductsService {
   getProducts() {
     return this.http.get<PaginateResponse<ProductResponse>>('/products');
   }
+
+  create(params: Omit<ProductResponse, 'id'>) {
+    return this.http.post<ProductResponse>('/products', JSON.stringify(params));
+  }
+  update(params: ProductResponse) {
+    return this.http.put<ProductResponse>(
+      `/products/${params.id}`,
+      JSON.stringify(params)
+    );
+  }
+
+  delete(id: string) {
+    return this.http.delete<ProductResponse>(`/products/${id}`);
+  }
 }
