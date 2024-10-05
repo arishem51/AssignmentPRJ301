@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ProductsService } from '../../services/products.service';
-import { ProductResponse } from '../../types';
+import { PaginateResponse, ProductResponse } from '../../types';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   standalone: true,
-  imports: [MatTableModule, MatProgressSpinnerModule],
+  imports: [MatTableModule, MatProgressSpinnerModule, MatButtonModule],
   styles: [
     `
       .container {
@@ -108,6 +109,7 @@ import { ProductResponse } from '../../types';
     }@else{
     <div class="container">
       <h5 style="text-align:center">Products</h5>
+      <button mat-flat-button>Add</button>
       <table mat-table [dataSource]="products" class="mat-elevation-z8">
         <ng-container matColumnDef="id">
           <th mat-header-cell *matHeaderCellDef>No.</th>
@@ -142,6 +144,7 @@ import { ProductResponse } from '../../types';
 })
 export class Products implements OnInit {
   loading = true;
+  queryData?: PaginateResponse<ProductResponse>['data'] = undefined;
   products: ProductResponse[] = [];
 
   constructor(private productService: ProductsService) {}
@@ -150,7 +153,8 @@ export class Products implements OnInit {
   ngOnInit(): void {
     this.productService.getProducts().subscribe({
       next: (value) => {
-        this.products = value;
+        this.queryData = value.data;
+        this.products = value.data.data;
       },
       error: () => {
         this.loading = false;
