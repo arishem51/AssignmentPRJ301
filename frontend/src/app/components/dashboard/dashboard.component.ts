@@ -9,6 +9,7 @@ import { MatNavList, MatListItem } from '@angular/material/list';
 import { MatToolbar } from '@angular/material/toolbar';
 import { Router, RouterOutlet } from '@angular/router';
 import { MatButton } from '@angular/material/button';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'dashboard',
@@ -69,8 +70,12 @@ import { MatButton } from '@angular/material/button';
     <mat-toolbar color="primary" class="mat-elevation-z4 toolbar">
       <button mat-raised-button (click)="handleGoHome()">Home</button>
       <span class="spacer"></span>
-      <button mat-flat-button><mat-icon>code</mat-icon> GitHub</button>
-      <button mat-button><mat-icon>exit_to_app</mat-icon> Logout</button>
+      <button mat-flat-button (click)="handleNavigateGithub()">
+        <mat-icon>code</mat-icon> GitHub
+      </button>
+      <button mat-button (click)="handleLogOut()">
+        <mat-icon>exit_to_app</mat-icon> Logout
+      </button>
     </mat-toolbar>
     <mat-sidenav-container class="sidenav-container">
       <mat-sidenav mode="side" opened class="sidebar">
@@ -87,9 +92,15 @@ import { MatButton } from '@angular/material/button';
   `,
 })
 export class Dashboard {
-  constructor(private router: Router) {}
+  constructor(private router: Router, private authService: AuthService) {}
   handleGoHome() {
     this.router.navigate(['/home']);
+  }
+  handleNavigateGithub() {
+    window.open('https://github.com/arishem51/AssignmentPRJ301');
+  }
+  handleLogOut() {
+    this.authService.logout();
   }
   handleProducts() {
     this.router.navigate(['/products']);
