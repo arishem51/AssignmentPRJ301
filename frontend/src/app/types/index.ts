@@ -25,3 +25,8 @@ export type ProductResponse = {
   estimatedEffort: number;
   img: string;
 };
+
+export type TQuery<TData> = {
+  loading: boolean;
+  data: TData | null;
+};

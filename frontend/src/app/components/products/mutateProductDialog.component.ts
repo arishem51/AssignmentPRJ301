@@ -21,7 +21,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ProductsService } from '../../services/products.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-export interface AddProductDialogData extends Omit<ProductResponse, 'id'> {
+export interface MutateProductDialogData extends Omit<ProductResponse, 'id'> {
   id?: string;
 }
 
@@ -86,10 +86,10 @@ export interface AddProductDialogData extends Omit<ProductResponse, 'id'> {
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AddProductDialog {
+export class MutateProductDialog {
   constructor(private productService: ProductsService) {}
 
-  readonly data = inject<AddProductDialogData>(MAT_DIALOG_DATA);
+  readonly data = inject<MutateProductDialogData>(MAT_DIALOG_DATA);
   readonly name = signal(this.data.name ?? '');
   readonly estimatedEffort = signal(this.data.estimatedEffort ?? 1);
   readonly img = signal(this.data.img ?? '');
@@ -97,7 +97,7 @@ export class AddProductDialog {
   loading = this.loadingSignal();
 
   private _snackBar = inject(MatSnackBar);
-  private dialogRef = inject(MatDialogRef<AddProductDialog>);
+  private dialogRef = inject(MatDialogRef<MutateProductDialog>);
 
   openSnackBar(message: string, action: string) {
     this._snackBar.open(message, action);
@@ -119,6 +119,7 @@ export class AddProductDialog {
         : this.productService.create(products);
       request.subscribe({
         next: () => {
+          this.productService.getProducts();
           this.loadingSignal.set(false);
           this.openSnackBar('Success!', '');
           this.dialogRef.close();

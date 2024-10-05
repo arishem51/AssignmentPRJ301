@@ -2,15 +2,16 @@ import { Component, OnInit, inject } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ProductsService } from '../../services/products.service';
-import { PaginateResponse, ProductResponse } from '../../types';
+import { ProductResponse } from '../../types';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
-import { AddProductDialog } from './addProductDialog.component';
+import { MutateProductDialog } from './mutateProductDialog.component';
 import { DeleteProductDialog } from './deleteProductDialog.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -184,9 +185,8 @@ import { DeleteProductDialog } from './deleteProductDialog.component';
   `,
 })
 export class Products implements OnInit {
-  loading = true;
-  queryData?: PaginateResponse<ProductResponse>['data'] = undefined;
   products: ProductResponse[] = [];
+  loading = false;
   searchProduct = '';
   readonly dialog = inject(MatDialog);
 
@@ -198,14 +198,16 @@ export class Products implements OnInit {
     'img',
     'actions',
   ];
+  private subscription: Subscription = new Subscription();
+
   onUpdateProduct(product: ProductResponse) {
-    this.dialog.open(AddProductDialog, {
+    this.dialog.open(MutateProductDialog, {
       data: product,
     });
   }
 
   openMutateProduct() {
-    this.dialog.open(AddProductDialog, {
+    this.dialog.open(MutateProductDialog, {
       data: {},
     });
   }
@@ -214,18 +216,17 @@ export class Products implements OnInit {
     this.dialog.open(DeleteProductDialog, { data: { id } });
   }
 
-  ngOnInit(): void {
-    this.productService.getProducts().subscribe({
-      next: (value) => {
-        this.queryData = value.data;
-        this.products = value.data.data;
-      },
-      error: () => {
-        this.loading = false;
-      },
-      complete: () => {
-        this.loading = false;
-      },
-    });
+  ngOnInit() {
+    this.productService.getProducts();
+    this.subscription.add(
+      this.productService.getProductQuery().subscribe({
+        next: (query) => {
+          if (query) {
+            this.products = query.data?.data ?? [];
+            this.loading = query.loading;
+          }
+        },
+      })
+    );
   }
 }

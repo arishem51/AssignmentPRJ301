@@ -61,6 +61,7 @@ export class DeleteProductDialog {
       next: () => {
         this.loadingSignal.set(false);
         this.openSnackBar('Success!', '');
+        this.productService.getProducts();
         this.dialogRef.close();
       },
       error: () => {
