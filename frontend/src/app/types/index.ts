@@ -9,14 +9,16 @@ export type UserResponse = {
   username: string;
 };
 
+export type PaginateMetaResponse = {
+  page: number;
+  pageSize: number;
+  totalElements: number;
+  totalPages: number;
+};
+
 export type PaginateResponse<T> = HttpServerResponse<{
   data: T[];
-  meta: {
-    page: number;
-    pageSize: number;
-    totalElements: number;
-    totalPages: number;
-  };
+  meta: PaginateMetaResponse;
 }>;
 
 export type ProductResponse = {

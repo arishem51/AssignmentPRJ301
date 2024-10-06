@@ -119,7 +119,7 @@ export class MutateProductDialog {
         : this.productService.create(products);
       request.subscribe({
         next: () => {
-          this.productService.getProducts();
+          this.productService.refetchProduct();
           this.loadingSignal.set(false);
           this.openSnackBar('Success!', '');
           this.dialogRef.close();

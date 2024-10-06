@@ -2,7 +2,7 @@ import { Component, OnInit, effect, inject } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ProductsService } from '../../services/products.service';
-import { ProductResponse } from '../../types';
+import { PaginateMetaResponse, ProductResponse } from '../../types';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -11,6 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { MutateProductDialog } from './mutateProductDialog.component';
 import { DeleteProductDialog } from './deleteProductDialog.component';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 
 @Component({
   standalone: true,
@@ -23,6 +24,7 @@ import { DeleteProductDialog } from './deleteProductDialog.component';
     FormsModule,
     MatButtonModule,
     MatIconModule,
+    MatPaginatorModule,
   ],
   styles: [
     `
@@ -117,8 +119,11 @@ import { DeleteProductDialog } from './deleteProductDialog.component';
       }
       .search-container {
         display: flex;
-        gap: 8px;
+        gap: 16px;
         align-items: center;
+      }
+      .search-container div {
+        margin-left: auto;
       }
     `,
   ],
@@ -134,9 +139,25 @@ import { DeleteProductDialog } from './deleteProductDialog.component';
         <button mat-flat-button (click)="openMutateProduct()">Add</button>
         <mat-form-field class="example-form-field">
           <mat-label>Search</mat-label>
-          <input matInput type="text" [(ngModel)]="searchProduct" />
+          <input
+            matInput
+            type="text"
+            [value]="searchProduct"
+            (input)="onSearchInput($event)"
+          />
         </mat-form-field>
+        <div>
+          <mat-paginator
+            [length]="meta?.totalElements"
+            [pageSize]="meta?.pageSize ?? 0"
+            [pageSizeOptions]="[meta?.pageSize ?? 0]"
+            (page)="handlePageEvent($event)"
+            aria-label="Select page"
+          >
+          </mat-paginator>
+        </div>
       </div>
+
       <table mat-table [dataSource]="products" class="mat-elevation-z8">
         <ng-container matColumnDef="id">
           <th mat-header-cell *matHeaderCellDef>No.</th>
@@ -183,20 +204,34 @@ import { DeleteProductDialog } from './deleteProductDialog.component';
     }
   `,
 })
-export class Products implements OnInit {
-  searchProduct = '';
+export class Products {
   readonly dialog = inject(MatDialog);
 
   productsSignal = inject(ProductsService).getProductQuerySignal();
+  productsMetaSignal = inject(ProductsService).getProductQueryMetaSignal();
+  searchProduct = this.productsMetaSignal().search;
 
   products: ProductResponse[] = [];
   loading = false;
+  meta: PaginateMetaResponse | null = null;
 
-  constructor(private productService: ProductsService) {
+  handlePageEvent(e: PageEvent) {
+    this.productsMetaSignal;
+    this.productsMetaSignal.update((prev) => {
+      return {
+        ...prev,
+        page: e.pageIndex,
+      };
+    });
+  }
+
+  constructor() {
     effect(() => {
       const query = this.productsSignal();
       if (query) {
+        this.meta?.totalElements;
         this.products = query.data?.data ?? [];
+        this.meta = query.data?.meta ?? null;
         this.loading = query.loading;
       }
     });
@@ -226,7 +261,12 @@ export class Products implements OnInit {
     this.dialog.open(DeleteProductDialog, { data: { id } });
   }
 
-  ngOnInit() {
-    this.productService.init();
+  onSearchInput(e: Event) {
+    this.productsMetaSignal.update((prev) => {
+      return {
+        ...prev,
+        search: (e.target as HTMLInputElement).value,
+      };
+    });
   }
 }
