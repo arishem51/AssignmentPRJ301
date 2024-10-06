@@ -24,8 +24,9 @@ public class ProductService {
         return new ProductResponse(product.getId(), product.getName(), product.getEstimatedEffort(), product.getImg());
     }
 
-    public PaginateResponse<ProductResponse> findAll(Pageable pageable) {
-        var productPage = productRepository.findAll(pageable);
+    public PaginateResponse<ProductResponse> findAll(Pageable pageable, String search) {
+        var productPage = search.isEmpty() ? productRepository.findAll(pageable)
+                : productRepository.findByNameContainingIgnoreCase(search, pageable);
         List<ProductResponse> productResponses = productPage.getContent().stream().map(
                 this::mapProductToProductResponse)
                 .collect(Collectors.toList());

@@ -27,10 +27,10 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<?> getAllProducts(@RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int pageSize) {
+            @RequestParam(defaultValue = "10") int pageSize, @RequestParam(defaultValue = "") String search) {
         try {
             Pageable pageable = PageRequest.of(page, pageSize);
-            var products = productService.findAll(pageable);
+            var products = productService.findAll(pageable, search);
             return ResponseEntity.ok().body(new BodyResponse<>("Success", products).getBodyResponse());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
