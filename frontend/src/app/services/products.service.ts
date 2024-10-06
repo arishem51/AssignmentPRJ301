@@ -1,23 +1,18 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { PaginateResponse, ProductResponse, TQuery } from '../types';
-import { BehaviorSubject, Subscription } from 'rxjs';
 
 export type ProductQuery = PaginateResponse<ProductResponse>['data'];
 @Injectable({
   providedIn: 'root',
 })
 export class ProductsService {
-  private productQuerySubject =
-    new BehaviorSubject<TQuery<ProductQuery> | null>(null);
+  private productQuerySignal = signal<TQuery<ProductQuery> | null>(null);
 
   constructor(private http: HttpClient) {}
 
   async getProducts() {
-    this.productQuerySubject.next({
-      loading: true,
-      data: null,
-    });
+    this.productQuerySignal.set({ loading: true, data: null });
     // await new Promise((res) => setTimeout(() => res(1), 5000));
     this.fetchProducts();
   }
@@ -25,18 +20,16 @@ export class ProductsService {
   fetchProducts() {
     this.http.get<PaginateResponse<ProductResponse>>('/products').subscribe({
       next: (value) => {
-        this.productQuerySubject.next({
-          loading: false,
-          data: value.data,
-        });
+        this.productQuerySignal.set({ loading: false, data: value.data });
       },
       error: () => {
-        this.productQuerySubject.next({
-          loading: false,
-          data: null,
-        });
+        this.productQuerySignal.set({ loading: false, data: null });
       },
     });
+  }
+
+  getProductQuerySignal() {
+    return this.productQuerySignal;
   }
 
   create(params: Omit<ProductResponse, 'id'>) {
@@ -53,8 +46,5 @@ export class ProductsService {
   }
   init() {
     this.getProducts();
-  }
-  getProductQueryObserve() {
-    return this.productQuerySubject;
   }
 }

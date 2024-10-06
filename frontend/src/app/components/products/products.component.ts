@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, effect, inject } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ProductsService } from '../../services/products.service';
@@ -187,10 +187,20 @@ export class Products implements OnInit {
   searchProduct = '';
   readonly dialog = inject(MatDialog);
 
+  productsSignal = inject(ProductsService).getProductQuerySignal();
+
   products: ProductResponse[] = [];
   loading = false;
 
-  constructor(private productService: ProductsService) {}
+  constructor(private productService: ProductsService) {
+    effect(() => {
+      const query = this.productsSignal();
+      if (query) {
+        this.products = query.data?.data ?? [];
+        this.loading = query.loading;
+      }
+    });
+  }
 
   displayedColumns: string[] = [
     'id',
@@ -199,17 +209,6 @@ export class Products implements OnInit {
     'img',
     'actions',
   ];
-
-  private setQuery({
-    products,
-    loading,
-  }: {
-    products: ProductResponse[];
-    loading: boolean;
-  }) {
-    this.loading = loading;
-    this.products = products;
-  }
 
   onUpdateProduct(product: ProductResponse) {
     this.dialog.open(MutateProductDialog, {
@@ -229,21 +228,5 @@ export class Products implements OnInit {
 
   ngOnInit() {
     this.productService.init();
-    this.productService.getProductQueryObserve().subscribe({
-      next: (query) => {
-        if (query) {
-          this.setQuery({
-            loading: query.loading,
-            products: query.data?.data ?? [],
-          });
-        }
-      },
-      error: () => {
-        this.setQuery({
-          loading: false,
-          products: [],
-        });
-      },
-    });
   }
 }
