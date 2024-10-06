@@ -1,16 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { PaginateResponse, ProductResponse, TQuery } from '../types';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 
-type ProductQuery = PaginateResponse<ProductResponse>['data'] | null;
+export type ProductQuery = PaginateResponse<ProductResponse>['data'];
 @Injectable({
   providedIn: 'root',
 })
 export class ProductsService {
-  private productQuerySubject = new BehaviorSubject<TQuery<
-    NonNullable<ProductQuery>
-  > | null>(null);
+  private productQuerySubject =
+    new BehaviorSubject<TQuery<ProductQuery> | null>(null);
 
   constructor(private http: HttpClient) {}
 
@@ -52,7 +51,10 @@ export class ProductsService {
   delete(id: string) {
     return this.http.delete<ProductResponse>(`/products/${id}`);
   }
-  getProductQuery() {
-    return this.productQuerySubject.asObservable();
+  init() {
+    this.getProducts();
+  }
+  getProductQueryObserve() {
+    return this.productQuerySubject;
   }
 }

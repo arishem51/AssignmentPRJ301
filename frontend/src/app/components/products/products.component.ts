@@ -11,7 +11,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { MutateProductDialog } from './mutateProductDialog.component';
 import { DeleteProductDialog } from './deleteProductDialog.component';
-import { Subscription } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -185,12 +184,14 @@ import { Subscription } from 'rxjs';
   `,
 })
 export class Products implements OnInit {
-  products: ProductResponse[] = [];
-  loading = false;
   searchProduct = '';
   readonly dialog = inject(MatDialog);
 
+  products: ProductResponse[] = [];
+  loading = false;
+
   constructor(private productService: ProductsService) {}
+
   displayedColumns: string[] = [
     'id',
     'name',
@@ -198,7 +199,17 @@ export class Products implements OnInit {
     'img',
     'actions',
   ];
-  private subscription: Subscription = new Subscription();
+
+  private setQuery({
+    products,
+    loading,
+  }: {
+    products: ProductResponse[];
+    loading: boolean;
+  }) {
+    this.loading = loading;
+    this.products = products;
+  }
 
   onUpdateProduct(product: ProductResponse) {
     this.dialog.open(MutateProductDialog, {
@@ -217,16 +228,22 @@ export class Products implements OnInit {
   }
 
   ngOnInit() {
-    this.productService.getProducts();
-    this.subscription.add(
-      this.productService.getProductQuery().subscribe({
-        next: (query) => {
-          if (query) {
-            this.products = query.data?.data ?? [];
-            this.loading = query.loading;
-          }
-        },
-      })
-    );
+    this.productService.init();
+    this.productService.getProductQueryObserve().subscribe({
+      next: (query) => {
+        if (query) {
+          this.setQuery({
+            loading: query.loading,
+            products: query.data?.data ?? [],
+          });
+        }
+      },
+      error: () => {
+        this.setQuery({
+          loading: false,
+          products: [],
+        });
+      },
+    });
   }
 }
