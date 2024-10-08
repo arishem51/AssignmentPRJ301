@@ -4,6 +4,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 
 @Component({
   standalone: true,
+  selector: 'app-plan',
   template: ` <div>Plan</div> `,
 })
 export class PlanComponent {}

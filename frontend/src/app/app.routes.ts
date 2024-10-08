@@ -1,11 +1,11 @@
 import { RouterModule, Routes } from '@angular/router';
-import { Login } from './components/login/Login.component';
-import { Dashboard } from './components/dashboard/Dashboard.component';
+import { Login } from './routes/login/Login.component';
+import { Dashboard } from './routes/dashboard/Dashboard.component';
 import { NgModule } from '@angular/core';
 import { AuthGuard } from './services/guard.service';
 import { PublicRoute } from './services/public.service';
-import { Home } from './components/home/Home.component';
-import { ProductionPlan } from './components/production-plan/ProductionPlan.component';
+import { Home } from './routes/home/Home.component';
+import { ProductionPlan } from './routes/ProductionPlan/ProductionPlan.component';
 
 export const routes: Routes = [
   {

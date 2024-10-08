@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
-import { Products } from '../products/Products.component';
+import { Products } from '../../components/products/Products.component';
+import { PlanComponent } from '../../components/plan/Plan.component';
 import { MatTabsModule } from '@angular/material/tabs';
 
 @Component({
   standalone: true,
-  imports: [Products, MatTabsModule],
+  imports: [Products, PlanComponent, MatTabsModule],
   styles: [
     `
       .tab-container {
@@ -19,7 +20,9 @@ import { MatTabsModule } from '@angular/material/tabs';
       mat-align-tabs="start"
     >
       <mat-tab label="Products"><app-products></app-products></mat-tab>
-      <mat-tab label="Plans"> </mat-tab>
+      <mat-tab label="Plans">
+        <app-plan></app-plan>
+      </mat-tab>
     </mat-tab-group>
   `,
 })
