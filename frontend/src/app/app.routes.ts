@@ -1,12 +1,11 @@
 import { RouterModule, Routes } from '@angular/router';
-import { Login } from './components/login/login.component';
-import { Dashboard } from './components/dashboard/dashboard.component';
+import { Login } from './components/login/Login.component';
+import { Dashboard } from './components/dashboard/Dashboard.component';
 import { NgModule } from '@angular/core';
 import { AuthGuard } from './services/guard.service';
 import { PublicRoute } from './services/public.service';
-import { Home } from './components/home/home.component';
-import { Products } from './components/products/products.component';
-import { PlanComponent } from './components/plan/plan.component';
+import { Home } from './components/home/Home.component';
+import { ProductionPlan } from './components/production-plan/ProductionPlan.component';
 
 export const routes: Routes = [
   {
@@ -23,7 +22,7 @@ export const routes: Routes = [
       },
       {
         path: 'production-plan',
-        component: PlanComponent,
+        component: ProductionPlan,
       },
     ],
     component: Dashboard,

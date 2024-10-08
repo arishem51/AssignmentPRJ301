@@ -9,8 +9,8 @@ import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
-import { MutateProductDialog } from './mutateProductDialog.component';
-import { DeleteProductDialog } from './deleteProductDialog.component';
+import { MutateProductDialog } from './MutateProductDialog.component';
+import { DeleteProductDialog } from './DeleteProductDialog.component';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 
 @Component({
@@ -206,10 +206,9 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
   `,
 })
 export class Products {
-  readonly dialog = inject(MatDialog);
-
-  productsSignal = inject(ProductsService).getProductQuerySignal();
-  productsMetaSignal = inject(ProductsService).getProductQueryMetaSignal();
+  private productsSignal = inject(ProductsService).getProductQuerySignal();
+  private productsMetaSignal =
+    inject(ProductsService).getProductQueryMetaSignal();
   searchProduct = this.productsMetaSignal().search;
 
   products: ProductResponse[] = [];
@@ -226,7 +225,7 @@ export class Products {
     });
   }
 
-  constructor() {
+  constructor(private readonly dialog: MatDialog) {
     effect(() => {
       const query = this.productsSignal();
       if (query) {

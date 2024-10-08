@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { Products } from '../products/products.component';
+import { Products } from '../products/Products.component';
+import { MatTabsModule } from '@angular/material/tabs';
 
 @Component({
   standalone: true,
-  imports: [Products],
-  template: ` <app-products></app-products>`,
+  template: ` <div>Plan</div> `,
 })
 export class PlanComponent {}
