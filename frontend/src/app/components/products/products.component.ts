@@ -15,6 +15,7 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 
 @Component({
   standalone: true,
+  selector: `app-products`,
   imports: [
     MatTableModule,
     MatProgressSpinnerModule,

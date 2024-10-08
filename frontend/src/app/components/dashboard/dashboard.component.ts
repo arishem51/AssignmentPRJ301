@@ -80,8 +80,10 @@ import { AuthService } from '../../services/auth.service';
     <mat-sidenav-container class="sidenav-container">
       <mat-sidenav mode="side" opened class="sidebar">
         <mat-nav-list>
-          <mat-list-item (click)="handleProducts()">Products</mat-list-item>
-          <mat-list-item (click)="handleEmployee()">Employee</mat-list-item>
+          <mat-list-item (click)="handleProducts()"
+            >Production Plan</mat-list-item
+          >
+          <mat-list-item (click)="handleEmployee()">Workshop</mat-list-item>
         </mat-nav-list>
       </mat-sidenav>
 
@@ -103,7 +105,7 @@ export class Dashboard {
     this.authService.logout();
   }
   handleProducts() {
-    this.router.navigate(['/products']);
+    this.router.navigate(['/production-plan']);
   }
   handleEmployee() {
     this.router.navigate(['/employee']);

@@ -42,10 +42,12 @@ export interface AddProductDialogData {
     </mat-dialog-actions>`,
 })
 export class DeleteProductDialog {
-  constructor(private productService: ProductsService) {}
+  constructor(
+    private productService: ProductsService,
+    private _snackBar: MatSnackBar,
+    private dialogRef: MatDialogRef<DeleteProductDialog>
+  ) {}
 
-  private _snackBar = inject(MatSnackBar);
-  private dialogRef = inject(MatDialogRef<DeleteProductDialog>);
   readonly loadingSignal = signal(false);
   readonly data = inject<AddProductDialogData>(MAT_DIALOG_DATA);
 
