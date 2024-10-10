@@ -31,6 +31,15 @@ public class PlanService {
         return planRepository.save(plan);
     }
 
+    public Plan update(Long id, PlanRequest request) {
+        var plan = planRepository.findById(id).get();
+        var planProducts = planProductItemService.findAllById(request.planProductIds().get());
+        if (planProducts.size() > 0) {
+            plan.setPlanProducts(planProducts);
+        }
+        return planRepository.save(plan);
+    }
+
     public PaginateResponse<Plan> findAll(Pageable pageable, String search) {
         var planPage = search.isEmpty() ? planRepository.findAll(pageable)
                 : planRepository.findByNameContainingIgnoreCase(search, pageable);
