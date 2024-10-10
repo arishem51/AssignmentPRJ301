@@ -1,6 +1,7 @@
 package com.example.scheduling_system.services;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,6 @@ import com.example.scheduling_system.dto.Meta;
 import com.example.scheduling_system.models.PlanProductItem;
 import com.example.scheduling_system.payload.request.PlanProductItemRequest;
 import com.example.scheduling_system.payload.response.PaginateResponse;
-import com.example.scheduling_system.payload.response.ProductResponse;
 import com.example.scheduling_system.repositories.PlanProductItemRepository;
 
 @Service
@@ -41,6 +41,10 @@ public class PlanProductItemService {
                 planProductItemPage.getTotalElements(),
                 planProductItemPage.getTotalPages());
         return new PaginateResponse<>(planProductResponse, meta);
+    }
+
+    public List<PlanProductItem> findAllById(Set<Long> ids) {
+        return planProductItemRepository.findAllById(ids);
     }
 
 }

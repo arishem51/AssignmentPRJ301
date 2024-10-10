@@ -1,7 +1,7 @@
 package com.example.scheduling_system.models;
 
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,6 +11,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "plans")
@@ -20,24 +22,33 @@ public class Plan {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
     private Date startDate;
+
+    @NotNull
     private Date endDate;
 
     @ManyToMany
     @JoinTable(name = "plan_product_mappings", joinColumns = @JoinColumn(name = "plan_id"), inverseJoinColumns = @JoinColumn(name = "plan_product_item_id"))
-    private Set<PlanProductItem> planProducts;
+    private List<PlanProductItem> planProducts;
 
     public Plan() {
     }
 
-    public Plan(Long id, String name, Date startDate, Date endDate, Set<PlanProductItem> planProducts) {
-        this.id = id;
+    public Plan(String name, Date startDate, Date endDate) {
+        this.name = name;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+
+    public Plan(String name, Date startDate, Date endDate, List<PlanProductItem> planProducts) {
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
         this.planProducts = planProducts;
     }
 
+    @NotBlank
     private String name;
 
     public Long getId() {
@@ -68,11 +79,11 @@ public class Plan {
         this.endDate = endDate;
     }
 
-    public Set<PlanProductItem> getPlanProducts() {
+    public List<PlanProductItem> getPlanProducts() {
         return planProducts;
     }
 
-    public void setPlanProducts(Set<PlanProductItem> planProducts) {
+    public void setPlanProducts(List<PlanProductItem> planProducts) {
         this.planProducts = planProducts;
     }
 
