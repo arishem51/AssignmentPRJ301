@@ -27,7 +27,7 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<?> getAllProducts(@RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int pageSize, @RequestParam(defaultValue = "") String search) {
+            @RequestParam(defaultValue = "5") int pageSize, @RequestParam(defaultValue = "") String search) {
         try {
             Pageable pageable = PageRequest.of(page, pageSize);
             var products = productService.findAll(pageable, search);
