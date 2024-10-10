@@ -41,12 +41,12 @@ public class ProductService {
         return mapProductToProductResponse(product);
     }
 
-    private Product getById(long id) {
+    public Product findById(long id) {
         return productRepository.findById(id).orElseThrow(() -> new RuntimeJsonMappingException("Not found!"));
     }
 
     public ProductResponse update(long id, ProductRequest request) {
-        var product = this.getById(id);
+        var product = this.findById(id);
         product.setName(request.name());
         product.setImg(request.img());
         product.setEstimatedEffort(request.estimatedEffort());
@@ -55,7 +55,7 @@ public class ProductService {
     }
 
     public void delete(long id) {
-        var product = this.getById(id);
+        var product = this.findById(id);
         productRepository.delete(product);
     }
 

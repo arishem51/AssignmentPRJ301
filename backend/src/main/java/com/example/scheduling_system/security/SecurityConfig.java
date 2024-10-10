@@ -2,7 +2,6 @@ package com.example.scheduling_system.security;
 
 import java.util.Arrays;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,14 +19,11 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.example.scheduling_system.jwt.JwtAuthenFilter;
-import com.example.scheduling_system.repositories.UserRepository;
 import com.example.scheduling_system.services.UserDetailServiceImpl;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    @Autowired
-    UserRepository userRepository;
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -70,7 +66,6 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
         http.csrf(csrf -> csrf.disable()).cors();
         http.authorizeHttpRequests(authorize -> {
             authorize.requestMatchers("/api/auth/**").permitAll()
@@ -79,8 +74,8 @@ public class SecurityConfig {
             System.out.println(exception);
         });
 
-        http.authenticationProvider(authenticationProvider()).addFilterBefore(authenticationJwtFilter(),
-                UsernamePasswordAuthenticationFilter.class);
+        http.authenticationProvider(authenticationProvider())
+                .addFilterBefore(authenticationJwtFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
