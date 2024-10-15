@@ -84,6 +84,11 @@ public class PlanController {
                         .body(new BodyResponse<>("An employee can work 2 shifts a day!", null));
             }
 
+            if (plan.getStatus() == Plan.Status.DONE) {
+                return ResponseEntity.ok()
+                        .body(new BodyResponse<>("This plan have been schedule!", null));
+            }
+
             scheduleService.schedule(request, plan);
             return ResponseEntity.ok().body(new BodyResponse<>("Success", null));
         } catch (Exception e) {

@@ -2,7 +2,6 @@ package com.example.scheduling_system.services;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -16,7 +15,6 @@ import com.example.scheduling_system.dto.payload.request.SchedulePlanRequest;
 import com.example.scheduling_system.dto.payload.request.ScheduleRequest;
 import com.example.scheduling_system.models.Employee;
 import com.example.scheduling_system.models.Plan;
-import com.example.scheduling_system.models.PlanProductItem;
 import com.example.scheduling_system.models.PlanProductMapping;
 import com.example.scheduling_system.models.Product;
 import com.example.scheduling_system.models.Schedule;
@@ -51,29 +49,37 @@ public class ScheduleService {
                 p -> p.getPlanProductItem().getProduct().getEstimatedEffort())).collect(Collectors.toList());
     }
 
-    public void schedule(SchedulePlanRequest request, Plan plan) {
-        long days = (int) TimeUnit.DAYS.convert(plan.getEndDate().getTime() - plan.getStartDate().getTime(),
+    private int getDaysFromPlan(Plan plan) {
+        return (int) TimeUnit.DAYS.convert(plan.getEndDate().getTime() - plan.getStartDate().getTime(),
                 TimeUnit.MILLISECONDS);
+    }
+
+    private Date addDateByIndex(Plan plan, int i) {
+        calendar.add(Calendar.DAY_OF_MONTH, i);
+        return calendar.getTime();
+    }
+
+    private void setDateByShift(Shift shift) {
+        calendar.set(Calendar.HOUR_OF_DAY, shift.getStartTime().getHour());
+        calendar.set(Calendar.MINUTE, shift.getStartTime().getMinute());
+        calendar.set(Calendar.SECOND, shift.getStartTime().getSecond());
+    }
+
+    public void schedule(SchedulePlanRequest request, Plan plan) {
+        int days = getDaysFromPlan(plan);
         List<Schedule> schedules = new ArrayList<>();
 
         Shift shiftS1 = shiftService.findById(1L);
-        Shift shiftS2 = shiftService.findById(2L);
-        Shift shiftS3 = shiftService.findById(3L);
+        // Shift shiftS2 = shiftService.findById(2L);
+        // Shift shiftS3 = shiftService.findById(3L);
 
         List<PlanProductMapping> sortedPlanProduct = sortByEstimateEffort(
                 planProductMappingService.getByPlanId(plan.getId()));
 
-        System.out.println("quantity: " + sortedPlanProduct.get(0).getPlanProductItem().getQuantity());
-        System.out.println("quantity: " + sortedPlanProduct.get(1).getPlanProductItem().getQuantity());
-
+        calendar.setTime(plan.getStartDate());
+        setDateByShift(shiftS1);
         for (int i = 0; i < days; i++) {
-            calendar.setTime(plan.getStartDate());
-            calendar.add(Calendar.DAY_OF_MONTH, i);
-            calendar.set(Calendar.HOUR_OF_DAY, 0);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
-            Date schDate = calendar.getTime();
+            Date schDate = addDateByIndex(plan, i);
 
             for (Long empId : request.s1()) {
                 double availableTime = 8;
