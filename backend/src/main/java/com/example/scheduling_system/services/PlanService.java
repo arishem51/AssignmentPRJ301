@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.scheduling_system.dto.Meta;
 import com.example.scheduling_system.dto.payload.request.PlanRequest;
+import com.example.scheduling_system.dto.payload.response.ListPlanResponseItem;
 import com.example.scheduling_system.dto.payload.response.PaginateResponse;
 import com.example.scheduling_system.models.Plan;
 import com.example.scheduling_system.repositories.PlanRepository;
@@ -43,10 +44,16 @@ public class PlanService {
         return planRepository.save(plan);
     }
 
-    public PaginateResponse<Plan> findAll(Pageable pageable, String search) {
+    private ListPlanResponseItem mapPlanToPlanResponseItem(Plan plan) {
+        return new ListPlanResponseItem(plan.getId(), plan.getStartDate(), plan.getEndDate(), plan.getName(),
+                plan.getStatus());
+    }
+
+    public PaginateResponse<ListPlanResponseItem> findAll(Pageable pageable, String search) {
         var planPage = search.isEmpty() ? planRepository.findAll(pageable)
                 : planRepository.findByNameContainingIgnoreCase(search, pageable);
-        List<Plan> planResponse = planPage.getContent().stream().collect(Collectors.toList());
+        List<ListPlanResponseItem> planResponse = planPage.getContent().stream().map(this::mapPlanToPlanResponseItem)
+                .collect(Collectors.toList());
         Meta meta = new Meta(planPage.getNumber() + 1, planPage.getSize(), planPage.getTotalElements(),
                 planPage.getTotalPages());
         return new PaginateResponse<>(planResponse, meta);

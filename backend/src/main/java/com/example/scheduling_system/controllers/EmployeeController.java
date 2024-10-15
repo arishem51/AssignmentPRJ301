@@ -26,10 +26,10 @@ public class EmployeeController {
             @RequestParam(defaultValue = "5") int pageSize, @RequestParam(defaultValue = "") String search) {
         try {
             var plans = employeeService.findAll(PageRequest.of(page, pageSize), search);
-            return ResponseEntity.ok().body(new BodyResponse<>("Success", plans).getBodyResponse());
+            return ResponseEntity.ok().body(new BodyResponse<>("Success", plans));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new BodyResponse<>("Get product error!").getBodyResponse());
+                    .body(new BodyResponse<>("Get product error!"));
         }
     }
 
@@ -37,10 +37,10 @@ public class EmployeeController {
     public ResponseEntity<?> createProduct(@RequestBody EmployeeRequest request) {
         try {
             var plan = employeeService.create(request);
-            return ResponseEntity.ok().body(new BodyResponse<>("Success", plan).getBodyResponse());
+            return ResponseEntity.ok().body(new BodyResponse<>("Success", plan));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new BodyResponse<>("Create product error!").getBodyResponse());
+                    .body(new BodyResponse<>("Create product error!"));
         }
     }
 }

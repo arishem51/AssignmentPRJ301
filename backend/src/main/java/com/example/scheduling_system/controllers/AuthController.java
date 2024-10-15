@@ -45,9 +45,9 @@ public class AuthController {
         try {
             User user = new User(request.username(), passwordEncoder.encode(request.password()), role);
             userService.create(user);
-            return ResponseEntity.ok().body(new BodyResponse<>("Success!").getBodyResponse());
+            return ResponseEntity.ok().body(new BodyResponse<>("Success!"));
         } catch (Exception e) {
-            return ResponseEntity.ok().body(new BodyResponse<>(e.getMessage()).getBodyResponse());
+            return ResponseEntity.ok().body(new BodyResponse<>(e.getMessage()));
         }
     }
 
@@ -63,7 +63,7 @@ public class AuthController {
                 authentication.getAuthorities().stream().findFirst().map(GrantedAuthority::getAuthority).orElse(null));
         response.put("token", jwtAuthenProvider.createToken(authentication.getName()));
 
-        return ResponseEntity.ok().body(new BodyResponse<>("Success!", response).getBodyResponse());
+        return ResponseEntity.ok().body(new BodyResponse<>("Success!", response));
     }
 
     @PostMapping("/create")

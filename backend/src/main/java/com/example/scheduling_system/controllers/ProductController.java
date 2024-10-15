@@ -31,10 +31,10 @@ public class ProductController {
         try {
             Pageable pageable = PageRequest.of(page, pageSize);
             var products = productService.findAll(pageable, search);
-            return ResponseEntity.ok().body(new BodyResponse<>("Success", products).getBodyResponse());
+            return ResponseEntity.ok().body(new BodyResponse<>("Success", products));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new BodyResponse<>("Get product error!").getBodyResponse());
+                    .body(new BodyResponse<>("Get product error!"));
         }
     }
 
@@ -42,10 +42,10 @@ public class ProductController {
     public ResponseEntity<?> createProduct(@RequestBody ProductRequest request) {
         try {
             var product = productService.create(request);
-            return ResponseEntity.ok().body(new BodyResponse<>("Success", product).getBodyResponse());
+            return ResponseEntity.ok().body(new BodyResponse<>("Success", product));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new BodyResponse<>("Create product error!").getBodyResponse());
+                    .body(new BodyResponse<>("Create product error!"));
         }
     }
 
@@ -53,10 +53,10 @@ public class ProductController {
     public ResponseEntity<?> updateProduct(@PathVariable String id, @RequestBody ProductRequest request) {
         try {
             var product = productService.update(Long.parseLong(id), request);
-            return ResponseEntity.ok().body(new BodyResponse<>("Success", product).getBodyResponse());
+            return ResponseEntity.ok().body(new BodyResponse<>("Success", product));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new BodyResponse<>("Update product error!").getBodyResponse());
+                    .body(new BodyResponse<>("Update product error!"));
         }
     }
 
@@ -64,10 +64,10 @@ public class ProductController {
     public ResponseEntity<?> deleteProduct(@PathVariable String id) {
         try {
             productService.delete(Long.parseLong(id));
-            return ResponseEntity.ok().body(new BodyResponse<>("Success").getBodyResponse());
+            return ResponseEntity.ok().body(new BodyResponse<>("Success"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new BodyResponse<>("Delete product error!").getBodyResponse());
+                    .body(new BodyResponse<>("Delete product error!"));
         }
     }
 }

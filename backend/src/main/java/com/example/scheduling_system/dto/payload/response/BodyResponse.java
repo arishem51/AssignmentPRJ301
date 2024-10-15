@@ -1,12 +1,26 @@
 package com.example.scheduling_system.dto.payload.response;
 
-import java.util.HashMap;
-
 public class BodyResponse<TData> {
     private String message;
     private TData data;
 
     public BodyResponse() {
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public TData getData() {
+        return data;
+    }
+
+    public void setData(TData data) {
+        this.data = data;
     }
 
     public BodyResponse(String message) {
@@ -19,10 +33,4 @@ public class BodyResponse<TData> {
         this.data = data;
     }
 
-    public HashMap<Object, Object> getBodyResponse() {
-        var response = new HashMap<Object, Object>();
-        response.put("message", this.message);
-        response.put("data", this.data);
-        return response;
-    }
 }

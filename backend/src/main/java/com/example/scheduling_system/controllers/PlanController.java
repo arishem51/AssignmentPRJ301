@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.scheduling_system.dto.payload.request.PlanRequest;
 import com.example.scheduling_system.dto.payload.request.SchedulePlanRequest;
 import com.example.scheduling_system.dto.payload.response.BodyResponse;
+import com.example.scheduling_system.dto.payload.response.ListPlanResponseItem;
+import com.example.scheduling_system.dto.payload.response.PaginateResponse;
 import com.example.scheduling_system.services.PlanService;
 import com.example.scheduling_system.services.ScheduleService;
 
@@ -32,14 +34,15 @@ public class PlanController {
     private ScheduleService scheduleService;
 
     @GetMapping
-    public ResponseEntity<?> getAllProducts(@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<BodyResponse<PaginateResponse<ListPlanResponseItem>>> getAll(
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int pageSize, @RequestParam(defaultValue = "") String search) {
         try {
-            var plans = planService.findAll(PageRequest.of(page, pageSize), search);
-            return ResponseEntity.ok().body(new BodyResponse<>("Success", plans).getBodyResponse());
+            PaginateResponse<ListPlanResponseItem> plans = planService.findAll(PageRequest.of(page, pageSize), search);
+            return ResponseEntity.ok().body(new BodyResponse<>("Success", plans));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new BodyResponse<>("Get plan error!").getBodyResponse());
+                    .body(new BodyResponse<>("Get plan error!"));
         }
     }
 
@@ -47,10 +50,10 @@ public class PlanController {
     public ResponseEntity<?> create(@RequestBody PlanRequest request) {
         try {
             var plan = planService.create(request);
-            return ResponseEntity.ok().body(new BodyResponse<>("Success", plan).getBodyResponse());
+            return ResponseEntity.ok().body(new BodyResponse<>("Success", plan));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new BodyResponse<>("Create plan error!").getBodyResponse());
+                    .body(new BodyResponse<>("Create plan error!"));
         }
     }
 
@@ -65,14 +68,14 @@ public class PlanController {
 
             if (!commonElement.isEmpty()) {
                 return ResponseEntity.ok()
-                        .body(new BodyResponse<>("An employee can work 2 shifts a day!", null).getBodyResponse());
+                        .body(new BodyResponse<>("An employee can work 2 shifts a day!", null));
             }
 
             scheduleService.schedule(request, plan);
-            return ResponseEntity.ok().body(new BodyResponse<>("Success", null).getBodyResponse());
+            return ResponseEntity.ok().body(new BodyResponse<>("Success", null));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new BodyResponse<>(e.getMessage()).getBodyResponse());
+                    .body(new BodyResponse<>(e.getMessage()));
         }
     }
 
@@ -80,10 +83,10 @@ public class PlanController {
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody PlanRequest request) {
         try {
             var plan = planService.update(id, request);
-            return ResponseEntity.ok().body(new BodyResponse<>("Success", plan).getBodyResponse());
+            return ResponseEntity.ok().body(new BodyResponse<>("Success", plan));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new BodyResponse<>(e.getMessage()).getBodyResponse());
+                    .body(new BodyResponse<>(e.getMessage()));
         }
     }
 }

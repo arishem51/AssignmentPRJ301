@@ -25,10 +25,10 @@ public class PlanProductItemController {
     public ResponseEntity<?> create(@RequestBody PlanProductItemRequest request) {
         try {
             var product = planProductItemService.create(request);
-            return ResponseEntity.ok().body(new BodyResponse<>("Success", product).getBodyResponse());
+            return ResponseEntity.ok().body(new BodyResponse<>("Success", product));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new BodyResponse<>("Create plan product item error!").getBodyResponse());
+                    .body(new BodyResponse<>("Create plan product item error!"));
         }
     }
 
@@ -37,10 +37,10 @@ public class PlanProductItemController {
             @RequestParam(defaultValue = "5") int pageSize, @RequestParam(defaultValue = "") String search) {
         try {
             var results = planProductItemService.findAll(PageRequest.of(page, pageSize), search);
-            return ResponseEntity.ok().body(new BodyResponse<>("Success", results).getBodyResponse());
+            return ResponseEntity.ok().body(new BodyResponse<>("Success", results));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new BodyResponse<>("Create plan product item error!").getBodyResponse());
+                    .body(new BodyResponse<>("Create plan product item error!"));
         }
     }
 }
