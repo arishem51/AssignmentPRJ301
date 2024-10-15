@@ -27,6 +27,8 @@ public class ScheduleDay {
     public void schedule() {
         for (Employee e : emps) {
             double availableTime = 8;
+            PlanProductMapping lastPlanProductWorking = null;
+
             if (availableTime > 0) {
                 for (PlanProductMapping planProductItem : planProducts) {
                     Product currentProduct = planProductItem.getPlanProductItem().getProduct();
@@ -36,7 +38,7 @@ public class ScheduleDay {
                     double pieceCount = (int) (availableTime / actualEffort);
                     if (pieceCount > 0 && !planProductItem.isEnoughQuantity()) {
                         pieceCount = leftQuantity < pieceCount ? leftQuantity : pieceCount;
-
+                        lastPlanProductWorking = planProductItem;
                         Schedule sch = new Schedule(plan, currentProduct, e,
                                 shift,
                                 scheduleDate);
@@ -48,10 +50,9 @@ public class ScheduleDay {
 
                 }
 
-                var largestEffortPlanProductItem = planProducts.get(0);
-                if (availableTime > 0 && !largestEffortPlanProductItem.isEnoughQuantity()) {
+                if (availableTime > 0 && lastPlanProductWorking != null && !lastPlanProductWorking.isEnoughQuantity()) {
                     Schedule sch = new Schedule(plan,
-                            largestEffortPlanProductItem.getPlanProductItem().getProduct(), e,
+                            lastPlanProductWorking.getPlanProductItem().getProduct(), e,
                             shift,
                             scheduleDate);
                     double actualEffort = calculateActualEffort(sch.getProduct(), e);
@@ -59,12 +60,12 @@ public class ScheduleDay {
                     double partialQuantity = availableTime / actualEffort;
                     // Ensure partial quantity does not exceed available quantity
                     partialQuantity = Math.min(partialQuantity,
-                            largestEffortPlanProductItem.leftQuantity());
+                            lastPlanProductWorking.leftQuantity());
                     sch.setQuantity(sch.getQuantity() + partialQuantity);
                     schedules.add(sch);
 
-                    double leftQuantity = largestEffortPlanProductItem.getQuantity() + partialQuantity;
-                    largestEffortPlanProductItem
+                    double leftQuantity = lastPlanProductWorking.getQuantity() + partialQuantity;
+                    lastPlanProductWorking
                             .setQuantity(leftQuantity);
                     availableTime = 0;
                 }
