@@ -44,8 +44,7 @@ public class PlanService {
     }
 
     private ListPlanResponseItem mapPlanToPlanResponseItem(Plan plan) {
-        return new ListPlanResponseItem(plan.getId(), plan.getStartDate(), plan.getEndDate(), plan.getName(),
-                plan.getStatus());
+        return new ListPlanResponseItem(plan);
     }
 
     public PaginateResponse<ListPlanResponseItem> findAll(Pageable pageable, String search) {
