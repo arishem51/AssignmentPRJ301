@@ -9,9 +9,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.scheduling_system.dto.Meta;
+import com.example.scheduling_system.dto.payload.request.PlanProductItemRequest;
+import com.example.scheduling_system.dto.payload.response.PaginateResponse;
 import com.example.scheduling_system.models.PlanProductItem;
-import com.example.scheduling_system.payload.request.PlanProductItemRequest;
-import com.example.scheduling_system.payload.response.PaginateResponse;
 import com.example.scheduling_system.repositories.PlanProductItemRepository;
 
 @Service

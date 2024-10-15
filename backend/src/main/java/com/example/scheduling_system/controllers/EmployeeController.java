@@ -1,7 +1,7 @@
 package com.example.scheduling_system.controllers;
 
-import com.example.scheduling_system.payload.request.EmployeeRequest;
-import com.example.scheduling_system.payload.response.BodyResponse;
+import com.example.scheduling_system.dto.payload.request.EmployeeRequest;
+import com.example.scheduling_system.dto.payload.response.BodyResponse;
 import com.example.scheduling_system.services.EmployeeService;
 
 import org.springframework.beans.factory.annotation.Autowired;

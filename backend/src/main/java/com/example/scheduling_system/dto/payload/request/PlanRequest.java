@@ -1,4 +1,4 @@
-package com.example.scheduling_system.payload.request;
+package com.example.scheduling_system.dto.payload.request;
 
 import java.util.Date;
 import java.util.Optional;
@@ -8,5 +8,5 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record PlanRequest(@NotBlank String name, @NotNull Date startDate, @NotNull Date endDate,
-                Optional<Set<Long>> planProductIds) {
+        Optional<Set<Long>> planProductIds) {
 }

@@ -1,4 +1,4 @@
-package com.example.scheduling_system.payload.request;
+package com.example.scheduling_system.dto.payload.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

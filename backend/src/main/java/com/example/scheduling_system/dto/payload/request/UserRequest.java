@@ -1,4 +1,4 @@
-package com.example.scheduling_system.payload.request;
+package com.example.scheduling_system.dto.payload.request;
 
 import com.example.scheduling_system.enums.UserRole;
 import jakarta.validation.constraints.NotBlank;

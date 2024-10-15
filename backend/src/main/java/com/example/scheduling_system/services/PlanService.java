@@ -8,10 +8,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.scheduling_system.dto.Meta;
+import com.example.scheduling_system.dto.payload.request.PlanRequest;
+import com.example.scheduling_system.dto.payload.response.PaginateResponse;
 import com.example.scheduling_system.models.Plan;
-import com.example.scheduling_system.payload.request.PlanRequest;
-import com.example.scheduling_system.payload.response.PaginateResponse;
 import com.example.scheduling_system.repositories.PlanRepository;
+import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 
 @Service
 public class PlanService {
@@ -37,6 +38,8 @@ public class PlanService {
         if (planProducts.size() > 0) {
             plan.setPlanProducts(planProducts);
         }
+        plan.setEndDate(request.endDate());
+        plan.setStartDate(request.startDate());
         return planRepository.save(plan);
     }
 
@@ -47,5 +50,9 @@ public class PlanService {
         Meta meta = new Meta(planPage.getNumber() + 1, planPage.getSize(), planPage.getTotalElements(),
                 planPage.getTotalPages());
         return new PaginateResponse<>(planResponse, meta);
+    }
+
+    public Plan findById(Long id) {
+        return planRepository.findById(id).orElseThrow(() -> new RuntimeJsonMappingException("Plan not found!"));
     }
 }

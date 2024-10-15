@@ -1,4 +1,4 @@
-package com.example.scheduling_system.payload.response;
+package com.example.scheduling_system.dto.payload.response;
 
 import com.example.scheduling_system.enums.UserRole;
 

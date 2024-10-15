@@ -3,11 +3,11 @@ package com.example.scheduling_system.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.scheduling_system.dto.payload.request.UserRequest;
+import com.example.scheduling_system.dto.payload.response.BodyResponse;
 import com.example.scheduling_system.enums.UserRole;
 import com.example.scheduling_system.jwt.JwtAuthenProvider;
 import com.example.scheduling_system.models.User;
-import com.example.scheduling_system.payload.request.UserRequest;
-import com.example.scheduling_system.payload.response.BodyResponse;
 import com.example.scheduling_system.services.UserService;
 
 import java.util.HashMap;

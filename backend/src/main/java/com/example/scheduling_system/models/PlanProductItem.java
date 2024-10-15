@@ -13,7 +13,7 @@ import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "plan_product_items")
-public class PlanProductItem {
+public class PlanProductItem implements Cloneable {
 
     @NotBlank
     private String name;
@@ -29,14 +29,23 @@ public class PlanProductItem {
     public PlanProductItem() {
     }
 
-    public PlanProductItem(String name, Product product, @NotNull int quantity) {
+    public PlanProductItem(String name, Product product, @NotNull double quantity) {
         this.product = product;
         this.quantity = quantity;
         this.name = name;
     }
 
+    @Override
+    public PlanProductItem clone() {
+        try {
+            return (PlanProductItem) super.clone();
+        } catch (Exception e) {
+            throw new RuntimeException("Error");
+        }
+    }
+
     @NotNull
-    private int quantity;
+    private double quantity;
 
     public Long getId() {
         return id;
@@ -50,11 +59,11 @@ public class PlanProductItem {
         this.product = product;
     }
 
-    public int getQuantity() {
+    public double getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(double quantity) {
         this.quantity = quantity;
     }
 }

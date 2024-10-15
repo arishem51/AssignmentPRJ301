@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.scheduling_system.payload.request.ProductRequest;
-import com.example.scheduling_system.payload.response.BodyResponse;
+import com.example.scheduling_system.dto.payload.request.ProductRequest;
+import com.example.scheduling_system.dto.payload.response.BodyResponse;
 import com.example.scheduling_system.services.ProductService;
 
 @RestController

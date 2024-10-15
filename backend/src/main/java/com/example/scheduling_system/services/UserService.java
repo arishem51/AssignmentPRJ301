@@ -5,8 +5,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.scheduling_system.dto.payload.response.UserResponse;
 import com.example.scheduling_system.models.User;
-import com.example.scheduling_system.payload.response.UserResponse;
 import com.example.scheduling_system.repositories.UserRepository;
 
 @Service
