@@ -3,7 +3,6 @@ package com.example.scheduling_system.services;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -15,14 +14,14 @@ import com.example.scheduling_system.models.Plan;
 import com.example.scheduling_system.repositories.PlanRepository;
 import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class PlanService {
 
-    @Autowired
-    private PlanRepository planRepository;
-
-    @Autowired
-    private PlanProductItemService planProductItemService;
+    private final PlanRepository planRepository;
+    private final PlanProductItemService planProductItemService;
 
     public Plan create(PlanRequest request) {
         var plan = new Plan(request.name(), request.startDate(), request.endDate());

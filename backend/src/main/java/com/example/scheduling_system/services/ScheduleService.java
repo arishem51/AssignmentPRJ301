@@ -134,6 +134,7 @@ public class ScheduleService {
             }
         }
 
+        plan.setStatus(Plan.Status.DONE);
         scheduleRepository.saveAll(schedules);
         plan.setSchedules(schedules);
     }

@@ -21,6 +21,7 @@ import com.example.scheduling_system.dto.payload.request.SchedulePlanRequest;
 import com.example.scheduling_system.dto.payload.response.BodyResponse;
 import com.example.scheduling_system.dto.payload.response.ListPlanResponseItem;
 import com.example.scheduling_system.dto.payload.response.PaginateResponse;
+import com.example.scheduling_system.models.Plan;
 import com.example.scheduling_system.services.PlanService;
 import com.example.scheduling_system.services.ScheduleService;
 
@@ -46,10 +47,22 @@ public class PlanController {
         }
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<BodyResponse<Plan>> getDetails(
+            @PathVariable Long id) {
+        try {
+            Plan plan = planService.findById(id);
+            return ResponseEntity.ok().body(new BodyResponse<>("Success", plan));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new BodyResponse<>("Get plan error!"));
+        }
+    }
+
     @PostMapping
     public ResponseEntity<?> create(@RequestBody PlanRequest request) {
         try {
-            var plan = planService.create(request);
+            Plan plan = planService.create(request);
             return ResponseEntity.ok().body(new BodyResponse<>("Success", plan));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
