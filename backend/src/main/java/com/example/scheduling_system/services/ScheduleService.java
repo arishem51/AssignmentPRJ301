@@ -8,15 +8,12 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-
 import org.springframework.stereotype.Service;
-
 import com.example.scheduling_system.dto.payload.request.SchedulePlanRequest;
 import com.example.scheduling_system.dto.payload.request.ScheduleRequest;
 import com.example.scheduling_system.models.Employee;
 import com.example.scheduling_system.models.Plan;
 import com.example.scheduling_system.models.PlanProductMapping;
-import com.example.scheduling_system.models.Product;
 import com.example.scheduling_system.models.Schedule;
 import com.example.scheduling_system.models.Shift;
 import com.example.scheduling_system.repositories.ScheduleRepository;
@@ -65,6 +62,10 @@ public class ScheduleService {
         calendar.set(Calendar.SECOND, shift.getStartTime().getSecond());
     }
 
+    private List<PlanProductMapping> getSortedPlanProductByEffort(Plan plan) {
+        return sortByEstimateEffort(planProductMappingService.getByPlanId(plan.getId()));
+    }
+
     public void schedule(SchedulePlanRequest request, Plan plan) {
         int days = getDaysFromPlan(plan);
         List<Schedule> schedules = new ArrayList<>();
@@ -72,63 +73,17 @@ public class ScheduleService {
         Shift shiftS1 = shiftService.findById(1L);
         // Shift shiftS2 = shiftService.findById(2L);
         // Shift shiftS3 = shiftService.findById(3L);
+        List<Employee> empS1 = empService.findByIds(request.s1());
 
-        List<PlanProductMapping> sortedPlanProduct = sortByEstimateEffort(
-                planProductMappingService.getByPlanId(plan.getId()));
+        List<PlanProductMapping> sortedPlanProduct = getSortedPlanProductByEffort(plan);
 
         calendar.setTime(plan.getStartDate());
         setDateByShift(shiftS1);
         for (int i = 0; i < days; i++) {
             Date schDate = addDateByIndex(plan, i);
-
-            for (Long empId : request.s1()) {
-                double availableTime = 8;
-                Employee e = empService.findById(empId);
-                double workingRate = e.getWorkingRate();
-
-                if (availableTime == 0) {
-                    continue;
-                }
-
-                for (PlanProductMapping planProductItem : sortedPlanProduct) {
-                    Product currentProduct = planProductItem.getPlanProductItem().getProduct();
-                    double actualEffort = currentProduct.getEstimatedEffort() / workingRate;
-                    double leftQuantity = planProductItem.leftQuantity();
-
-                    double pieceCount = (int) (availableTime / actualEffort);
-                    if (pieceCount > 0 && !planProductItem.isEnoughQuantity()) {
-                        pieceCount = leftQuantity < pieceCount ? leftQuantity : pieceCount;
-
-                        Schedule sch = new Schedule(plan, currentProduct, e, shiftS1,
-                                schDate);
-                        sch.setQuantity(pieceCount);
-                        availableTime -= (pieceCount * actualEffort);
-                        planProductItem.setQuantity(planProductItem.getQuantity() + pieceCount);
-                        schedules.add(sch);
-                    }
-                }
-
-                var largestEffortPlanProductItem = sortedPlanProduct.get(0);
-                if (availableTime > 0 && !largestEffortPlanProductItem.isEnoughQuantity()) {
-                    Schedule sch = new Schedule(plan,
-                            largestEffortPlanProductItem.getPlanProductItem().getProduct(), e, shiftS1,
-                            schDate);
-                    Product largestProduct = sch.getProduct();
-                    double actualEffort = largestProduct.getEstimatedEffort() / workingRate;
-
-                    double partialQuantity = availableTime / actualEffort;
-                    // Ensure partial quantity does not exceed available quantity
-                    partialQuantity = Math.min(partialQuantity,
-                            largestEffortPlanProductItem.leftQuantity());
-                    sch.setQuantity(sch.getQuantity() + partialQuantity);
-                    schedules.add(sch);
-
-                    double leftQuantity = largestEffortPlanProductItem.getQuantity() + partialQuantity;
-                    largestEffortPlanProductItem
-                            .setQuantity(leftQuantity);
-                    availableTime = 0;
-                }
-            }
+            ScheduleDay scheduleDay = new ScheduleDay(
+                    empS1, sortedPlanProduct, schedules, plan, shiftS1, schDate);
+            scheduleDay.schedule();
         }
 
         scheduleRepository.saveAll(schedules);
