@@ -1,12 +1,15 @@
 package com.example.scheduling_system.dto.payload.request;
 
 import java.util.Date;
-import java.util.Optional;
-import java.util.Set;
+import java.util.List;
+
+import com.example.scheduling_system.dto.Campaign;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 public record PlanRequest(@NotBlank String name, @NotNull Date startDate, @NotNull Date endDate,
-        Optional<Set<Long>> planProductIds) {
+                @NotEmpty List<Campaign> campaigns) {
+
 }

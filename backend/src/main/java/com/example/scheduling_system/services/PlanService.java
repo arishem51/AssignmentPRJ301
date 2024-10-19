@@ -2,45 +2,55 @@ package com.example.scheduling_system.services;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
+import com.example.scheduling_system.dto.Campaign;
 import com.example.scheduling_system.dto.Meta;
 import com.example.scheduling_system.dto.payload.request.PlanRequest;
 import com.example.scheduling_system.dto.payload.response.ListPlanResponseItem;
 import com.example.scheduling_system.dto.payload.response.PaginateResponse;
 import com.example.scheduling_system.models.Plan;
+import com.example.scheduling_system.models.PlanCampaign;
+import com.example.scheduling_system.models.Product;
 import com.example.scheduling_system.repositories.PlanRepository;
 import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
-
 import lombok.RequiredArgsConstructor;
+import java.util.ArrayList;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class PlanService {
 
     private final PlanRepository planRepository;
-    private final PlanProductItemService planProductItemService;
+    private final ProductService productService;
+    private final PlanCampaignService planCampaignService;
+
+    private Map<Long, Product> getProductFromRequest(PlanRequest request) {
+        List<Long> productIds = request.campaigns().stream().map(Campaign::productId).collect(Collectors.toList());
+        return productService.findAllById(productIds).stream()
+                .collect(Collectors.toMap(Product::getId, product -> product));
+    }
 
     public Plan create(PlanRequest request) {
-        var plan = new Plan(request.name(), request.startDate(), request.endDate());
-        var planProducts = planProductItemService.findAllById(request.planProductIds().get());
-        if (planProducts.size() > 0) {
-            plan.setPlanProducts(planProducts);
+        Plan plan = new Plan(request.name(), request.startDate(), request.endDate());
+        List<PlanCampaign> planCampaigns = new ArrayList<>();
+        Map<Long, Product> products = getProductFromRequest(request);
+
+        for (Campaign campaign : request.campaigns()) {
+            Product product = products.get(campaign.productId());
+            planCampaigns.add(new PlanCampaign(product, plan, campaign.quantity(), campaign.estimateEffort()));
         }
+        plan.setPlanCampaigns(planCampaigns);
         return planRepository.save(plan);
     }
 
     public Plan update(Long id, PlanRequest request) {
-        var plan = planRepository.findById(id).get();
-        var planProducts = planProductItemService.findAllById(request.planProductIds().get());
-        if (planProducts.size() > 0) {
-            plan.setPlanProducts(planProducts);
-        }
-        plan.setEndDate(request.endDate());
-        plan.setStartDate(request.startDate());
-        return planRepository.save(plan);
+        Plan plan = planRepository.findById(id).get();
+        // plan.setEndDate(request.endDate());
+        // plan.setStartDate(request.startDate());
+        // return planRepository.save(plan);
+        return plan;
     }
 
     private ListPlanResponseItem mapPlanToPlanResponseItem(Plan plan) {

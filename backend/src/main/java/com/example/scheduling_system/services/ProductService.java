@@ -45,6 +45,10 @@ public class ProductService {
         return productRepository.findById(id).orElseThrow(() -> new RuntimeJsonMappingException("Not found!"));
     }
 
+    public List<Product> findAllById(List<Long> ids) {
+        return productRepository.findAllById(ids);
+    }
+
     public ProductResponse update(long id, ProductRequest request) {
         var product = this.findById(id);
         product.setName(request.name());
