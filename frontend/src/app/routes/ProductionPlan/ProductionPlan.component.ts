@@ -19,10 +19,10 @@ import { MatTabsModule } from '@angular/material/tabs';
       mat-stretch-tabs="false"
       mat-align-tabs="start"
     >
-      <mat-tab label="Products"><app-products></app-products></mat-tab>
       <mat-tab label="Plans">
         <app-plan></app-plan>
       </mat-tab>
+      <mat-tab label="Products"><app-products></app-products></mat-tab>
     </mat-tab-group>
   `,
 })

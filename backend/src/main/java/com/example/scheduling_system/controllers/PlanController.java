@@ -17,22 +17,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.scheduling_system.dto.payload.request.PlanRequest;
-import com.example.scheduling_system.dto.payload.request.SchedulePlanRequest;
 import com.example.scheduling_system.dto.payload.response.BodyResponse;
 import com.example.scheduling_system.dto.payload.response.ListPlanResponseItem;
 import com.example.scheduling_system.dto.payload.response.PaginateResponse;
 import com.example.scheduling_system.models.Plan;
 import com.example.scheduling_system.services.PlanService;
-import com.example.scheduling_system.services.ScheduleService;
 
 @RestController
 @RequestMapping(path = "api/plans")
 public class PlanController {
     @Autowired
     private PlanService planService;
-
-    @Autowired
-    private ScheduleService scheduleService;
 
     @GetMapping
     public ResponseEntity<BodyResponse<PaginateResponse<ListPlanResponseItem>>> getAll(
@@ -67,33 +62,6 @@ public class PlanController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new BodyResponse<>("Create plan error!"));
-        }
-    }
-
-    @PostMapping("/{id}/schedule")
-    public ResponseEntity<?> schedule(@PathVariable Long id, @RequestBody SchedulePlanRequest request) {
-        try {
-            var plan = planService.findById(id);
-            // Find the common productIds between 3 sets products ids
-            Set<Long> commonElement = new HashSet<>(request.s1());
-            commonElement.retainAll(request.s2());
-            commonElement.retainAll(request.s3());
-
-            if (!commonElement.isEmpty()) {
-                return ResponseEntity.ok()
-                        .body(new BodyResponse<>("An employee can work 2 shifts a day!", null));
-            }
-
-            if (plan.getStatus() == Plan.Status.DONE) {
-                return ResponseEntity.ok()
-                        .body(new BodyResponse<>("This plan have been schedule!", null));
-            }
-
-            scheduleService.schedule(request, plan);
-            return ResponseEntity.ok().body(new BodyResponse<>("Success", null));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new BodyResponse<>(e.getMessage()));
         }
     }
 

@@ -13,18 +13,14 @@ public class Product {
     @Column(name = "product_name", nullable = false)
     private String name;
 
-    @Column(name = "estimated_effort")
-    private Double estimatedEffort;
-
     @Column(name = "img")
     private String img;
 
     public Product() {
     }
 
-    public Product(String name, Double estimatedEffort, String img) {
+    public Product(String name, String img) {
         this.name = name;
-        this.estimatedEffort = estimatedEffort;
         this.img = img;
     }
 
@@ -42,14 +38,6 @@ public class Product {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Double getEstimatedEffort() {
-        return estimatedEffort;
-    }
-
-    public void setEstimatedEffort(Double estimatedEffort) {
-        this.estimatedEffort = estimatedEffort;
     }
 
     public String getImg() {

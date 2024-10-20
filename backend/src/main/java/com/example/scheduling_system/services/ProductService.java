@@ -21,7 +21,7 @@ public class ProductService {
     ProductRepository productRepository;
 
     private ProductResponse mapProductToProductResponse(Product product) {
-        return new ProductResponse(product.getId(), product.getName(), product.getEstimatedEffort(), product.getImg());
+        return new ProductResponse(product.getId(), product.getName(), product.getImg());
     }
 
     public PaginateResponse<ProductResponse> findAll(Pageable pageable, String search) {
@@ -36,7 +36,7 @@ public class ProductService {
     }
 
     public ProductResponse create(ProductRequest request) {
-        var product = new Product(request.name(), request.estimatedEffort(), request.img());
+        var product = new Product(request.name(), request.img());
         productRepository.save(product);
         return mapProductToProductResponse(product);
     }
@@ -53,7 +53,6 @@ public class ProductService {
         var product = this.findById(id);
         product.setName(request.name());
         product.setImg(request.img());
-        product.setEstimatedEffort(request.estimatedEffort());
         productRepository.save(product);
         return mapProductToProductResponse(product);
     }
