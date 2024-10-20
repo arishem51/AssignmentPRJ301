@@ -28,6 +28,15 @@ export type ProductResponse = {
   img: string;
 };
 
+export type PlanStatus = 'OPEN' | 'CLOSED';
+export type PlanResponse = {
+  id: number;
+  startDate: string;
+  endDate: string;
+  name: string;
+  status: PlanStatus;
+};
+
 export type TQuery<TData> = {
   loading: boolean;
   data: TData | null;

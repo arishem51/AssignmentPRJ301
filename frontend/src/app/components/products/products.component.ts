@@ -32,19 +32,11 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
       .container {
         padding: 24px;
       }
-      /* Table container styling */
-      table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-
       .mat-elevation-z8 {
         margin-top: 20px;
         border-radius: 8px;
         overflow: hidden;
       }
-
-      /* Table header styling */
       th.mat-header-cell {
         background-color: #3f51b5;
         color: white;
@@ -56,45 +48,30 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
         border-bottom: 2px solid #e0e0e0;
       }
 
-      /* Table row styling */
       td.mat-cell {
         padding: 16px;
         font-size: 14px;
         border-bottom: 1px solid #e0e0e0;
       }
-
-      /* Add hover effect for rows */
       tr.mat-row:hover {
         background-color: rgba(63, 81, 181, 0.08);
       }
-
-      /* Style for alternate rows (zebra striping effect) */
       tr.mat-row:nth-child(even) td {
         background-color: #f5f5f5;
       }
-
-      /* Table header row */
       tr.mat-header-row {
         height: 56px;
       }
-
-      /* Style for the table rows */
       tr.mat-row {
         height: 48px;
       }
-
-      /* Add subtle box shadow to the table */
-      table {
-        box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
-      }
-
-      /* Optional: Add rounded corners to the table */
       table {
         border-radius: 8px;
         overflow: hidden;
+        box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        border-collapse: collapse;
       }
-
-      /* Optional: Add padding between the columns */
       td.mat-cell,
       th.mat-header-cell {
         padding: 12px 16px;
@@ -104,12 +81,6 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
       tr.mat-row.mat-row-selected {
         background-color: rgba(63, 81, 181, 0.1);
       }
-      .loading-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
-      }
       td,
       th {
         text-align: center;
@@ -117,6 +88,12 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
       }
       td {
         padding: 12px 0;
+      }
+      .loading-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
       }
       .search-container {
         display: flex;
@@ -191,7 +168,11 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
               <button (click)="onUpdateProduct(element)" mat-flat-button>
                 Update
               </button>
-              <button mat-raised-button (click)="openDeleteProduct(element.id)">
+              <button
+                color="warn"
+                mat-raised-button
+                (click)="openDeleteProduct(element.id)"
+              >
                 Delete
               </button>
             </div>
@@ -229,7 +210,6 @@ export class Products {
     effect(() => {
       const query = this.productsSignal();
       if (query) {
-        this.meta?.totalElements;
         this.products = query.data?.data ?? [];
         this.meta = query.data?.meta ?? null;
         this.loading = query.loading;
