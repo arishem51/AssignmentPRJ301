@@ -47,14 +47,14 @@ import { PaginateMetaResponse } from '../../types';
     <div class="container">
       <h5 style="text-align:center">{{ title }}</h5>
       <div class="search-container">
-        <button mat-flat-button (click)="onAddClick()">Add</button>
+        <button mat-flat-button (click)="handleAdd()">Add</button>
         <mat-form-field class="example-form-field">
           <mat-label>Search</mat-label>
           <input
             matInput
             type="text"
             [value]="search"
-            (input)="onSearchInput($event)"
+            (input)="handleSearch($event)"
           />
         </mat-form-field>
         <div>
@@ -62,7 +62,7 @@ import { PaginateMetaResponse } from '../../types';
             [length]="meta?.totalElements"
             [pageSize]="meta?.pageSize ?? 0"
             [pageSizeOptions]="[meta?.pageSize ?? 0]"
-            (page)="onPageChange($event)"
+            (page)="handlePageChange($event)"
             aria-label="Select page"
           >
           </mat-paginator>
@@ -82,18 +82,19 @@ export class Container {
 
   @Output() onAdd: EventEmitter<void> = new EventEmitter<void>();
   @Output() onSearch: EventEmitter<string> = new EventEmitter<string>();
-  @Output() onPage: EventEmitter<PageEvent> = new EventEmitter<PageEvent>();
+  @Output() onPageChange: EventEmitter<PageEvent> =
+    new EventEmitter<PageEvent>();
 
-  onAddClick() {
+  handleAdd() {
     this.onAdd.emit();
   }
 
-  onSearchInput(event: Event) {
+  handleSearch(event: Event) {
     const inputElement = event.target as HTMLInputElement;
     this.onSearch.emit(inputElement.value);
   }
 
-  onPageChange(event: PageEvent) {
-    this.onPage.emit(event);
+  handlePageChange(event: PageEvent) {
+    this.onPageChange.emit(event);
   }
 }

@@ -69,7 +69,7 @@ import { formatDate } from '../../utils';
         padding: 12px 0;
       }
   `,
-  template: ` <app-table
+  template: ` <app-container
     [loading]="loading"
     [title]="'Plans'"
     [search]="search"
@@ -132,7 +132,7 @@ import { formatDate } from '../../utils';
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
-  </app-table>`,
+  </app-container>`,
 })
 export class PlanComponent {
   loading = true;
@@ -153,7 +153,8 @@ export class PlanComponent {
   constructor(private planService: PlanService) {
     effect(() => {
       const querySignal = this.planService.getQuerySignal();
-      this.search = this.planService.getQueryMetaSignal()().search ?? '';
+      const queryMetaSignal = this.planService.getQueryMetaSignal();
+      this.search = queryMetaSignal().search ?? '';
       const query = querySignal();
       if (query) {
         this.plans = query.data?.data ?? [];
