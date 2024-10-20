@@ -147,13 +147,6 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
           <td mat-cell *matCellDef="let element">{{ element.name }}</td>
         </ng-container>
 
-        <ng-container matColumnDef="estimatedEffort">
-          <th mat-header-cell *matHeaderCellDef>Effort (per hour)</th>
-          <td mat-cell *matCellDef="let element">
-            {{ element.estimatedEffort }}
-          </td>
-        </ng-container>
-
         <ng-container matColumnDef="img">
           <th mat-header-cell *matHeaderCellDef>Image</th>
           <td mat-cell *matCellDef="let element">
@@ -217,13 +210,7 @@ export class Products {
     });
   }
 
-  displayedColumns: string[] = [
-    'id',
-    'name',
-    'estimatedEffort',
-    'img',
-    'actions',
-  ];
+  displayedColumns: string[] = ['id', 'name', 'img', 'actions'];
 
   onUpdateProduct(product: ProductResponse) {
     this.dialog.open(MutateProductDialog, {

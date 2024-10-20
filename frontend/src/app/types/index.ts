@@ -24,7 +24,6 @@ export type PaginateResponse<T> = HttpServerResponse<{
 export type ProductResponse = {
   id: number;
   name: string;
-  estimatedEffort: number;
   img: string;
 };
 

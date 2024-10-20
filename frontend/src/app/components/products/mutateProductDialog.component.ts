@@ -45,16 +45,6 @@ export interface MutateProductDialogData extends Omit<ProductResponse, 'id'> {
         <mat-label>Product Name</mat-label>
         <input matInput [(ngModel)]="name" />
       </mat-form-field>
-      <mat-form-field>
-        <mat-label>Estimated Effort</mat-label>
-        <input
-          matInput
-          type="number"
-          min="1"
-          max="10"
-          [(ngModel)]="estimatedEffort"
-        />
-      </mat-form-field>
 
       <mat-form-field>
         <mat-label>Image URL</mat-label>
@@ -91,7 +81,6 @@ export class MutateProductDialog {
 
   readonly data = inject<MutateProductDialogData>(MAT_DIALOG_DATA);
   readonly name = signal(this.data.name ?? '');
-  readonly estimatedEffort = signal(this.data.estimatedEffort ?? 1);
   readonly img = signal(this.data.img ?? '');
   readonly loadingSignal = signal(false);
   loading = this.loadingSignal();
@@ -105,11 +94,10 @@ export class MutateProductDialog {
 
   onMutateProduct() {
     this.loadingSignal.set(true);
-    if (this.name() && this.img() && this.estimatedEffort()) {
+    if (this.name() && this.img()) {
       const products = {
         name: this.name(),
         img: this.img(),
-        estimatedEffort: this.estimatedEffort(),
       };
       const request = this.data.id
         ? this.productService.update({
