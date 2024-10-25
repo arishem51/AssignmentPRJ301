@@ -12,9 +12,12 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDivider } from '@angular/material/divider';
 import { MatInputModule } from '@angular/material/input';
 import { ProductsService } from '../../services/products.service';
-import { ProductResponse } from '../../types';
+import { PlanCampaign, PlanResponse, ProductResponse } from '../../types';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { Observable, map, startWith } from 'rxjs';
+import { PlanService } from '../../services/plan.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-production-plan-detail',
@@ -103,7 +106,7 @@ import { Observable, map, startWith } from 'rxjs';
             [formGroupName]="i"
             class="campaign-form-container"
           >
-            <h6>Campaign {{ i + 1 }}</h6>
+            <h6>Product {{ i + 1 }}</h6>
 
             <div>
               <mat-form-field appearance="fill">
@@ -112,7 +115,7 @@ import { Observable, map, startWith } from 'rxjs';
                   type="text"
                   matInput
                   [matAutocomplete]="auto"
-                  formControlName="productId"
+                  formControlName="product"
                 />
                 <mat-autocomplete
                   #auto="matAutocomplete"
@@ -146,6 +149,14 @@ import { Observable, map, startWith } from 'rxjs';
                   formControlName="estimateEffort"
                 />
               </mat-form-field>
+
+              <button
+                (click)="deleteCampaignItem(i)"
+                color="warn"
+                mat-flat-button
+              >
+                Delete
+              </button>
             </div>
 
             <mat-divider></mat-divider>
@@ -154,6 +165,9 @@ import { Observable, map, startWith } from 'rxjs';
       </div>
 
       <button mat-flat-button (click)="addCampaignItem()">Add Products</button>
+      <button style="margin-left: 8px" mat-flat-button (click)="createPlan()">
+        Create Plan
+      </button>
     </div>
   `,
 })
@@ -181,7 +195,12 @@ export class ProductionPlanDetail {
     );
   }
 
-  constructor(private productService: ProductsService) {
+  constructor(
+    private productService: ProductsService,
+    private planService: PlanService,
+    private _snackBar: MatSnackBar,
+    private router: Router
+  ) {
     effect(() => {
       const querySignal = this.productService.getProductQuerySignal();
       const query = querySignal();
@@ -196,7 +215,7 @@ export class ProductionPlanDetail {
   }
 
   private setupProductFiltering(index: number) {
-    const productControl = this.campaigns.at(index).get('productId');
+    const productControl = this.campaigns.at(index).get('product');
     if (productControl) {
       this.filteredProducts[index] = productControl.valueChanges.pipe(
         startWith(''),
@@ -208,11 +227,44 @@ export class ProductionPlanDetail {
   addCampaignItem() {
     this.campaigns.push(
       new FormGroup({
-        productId: new FormControl(''),
+        product: new FormControl(''),
         quantity: new FormControl(0),
         estimateEffort: new FormControl(0),
       })
     );
     this.setupProductFiltering(this.campaigns.length - 1);
+  }
+
+  deleteCampaignItem(index: number) {
+    this.campaigns.removeAt(index);
+  }
+
+  createPlan() {
+    const plan: Omit<PlanResponse, 'id'> = {
+      name: this.planForm.get('name')?.value ?? '',
+      startDate: new Date(
+        this.planForm.get('startDate')?.value.toString()
+      ).toISOString(),
+      endDate: new Date(
+        this.planForm.get('endDate')?.value.toString()
+      ).toISOString(),
+      status: 'OPEN',
+      campaigns: this.campaigns.value.map(
+        ({
+          product,
+          ...rest
+        }: PlanCampaign & { product: ProductResponse }) => ({
+          ...rest,
+          productId: product.id,
+        })
+      ),
+    };
+    this.planService.create(plan).subscribe(
+      (response) => {
+        this._snackBar.open('Create plan success');
+        this.router.navigate(['/production-plan']);
+      },
+      (error) => console.error('Error in request', error)
+    );
   }
 }

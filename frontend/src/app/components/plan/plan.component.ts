@@ -5,6 +5,7 @@ import { Container } from '../container/Container.component';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { formatDate } from '../../utils';
+import { Router } from '@angular/router';
 
 @Component({
   standalone: true,
@@ -142,7 +143,9 @@ export class PlanComponent {
 
   handleSearch() {}
   handlePage() {}
-  handleAdd() {}
+  handleAdd() {
+    this.router.navigate(['/production-plan/create']);
+  }
   editPlan(plan: PlanResponse) {}
   deletePlan(plan: PlanResponse) {}
 
@@ -150,7 +153,7 @@ export class PlanComponent {
     return formatDate(date);
   }
 
-  constructor(private planService: PlanService) {
+  constructor(private planService: PlanService, private router: Router) {
     effect(() => {
       const querySignal = this.planService.getQuerySignal();
       const queryMetaSignal = this.planService.getQueryMetaSignal();

@@ -27,6 +27,10 @@ export type ProductResponse = {
   img: string;
 };
 
+export type PlanCampaign = {
+  productId: number;
+  name: string;
+};
 export type PlanStatus = 'OPEN' | 'CLOSED';
 export type PlanResponse = {
   id: number;
@@ -34,6 +38,7 @@ export type PlanResponse = {
   endDate: string;
   name: string;
   status: PlanStatus;
+  campaigns?: PlanCampaign[];
 };
 
 export type TQuery<TData> = {
