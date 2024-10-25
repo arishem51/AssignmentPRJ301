@@ -1,5 +1,7 @@
 package com.example.scheduling_system.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,6 +12,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
@@ -17,6 +20,7 @@ import lombok.Setter;
 @Table(name = "PlanCampaign")
 @Getter
 @Setter
+@NoArgsConstructor(force = true)
 @RequiredArgsConstructor
 public class PlanCampaign {
 
@@ -32,6 +36,7 @@ public class PlanCampaign {
     @ManyToOne
     @JoinColumn(name = "plan_id")
     @NotNull
+    @JsonIgnore
     private final Plan plan;
 
     @NotNull

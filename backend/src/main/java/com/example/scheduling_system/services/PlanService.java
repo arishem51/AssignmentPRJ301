@@ -14,6 +14,8 @@ import com.example.scheduling_system.models.PlanCampaign;
 import com.example.scheduling_system.models.Product;
 import com.example.scheduling_system.repositories.PlanRepository;
 import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
+
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import java.util.ArrayList;
 import java.util.Map;
@@ -32,6 +34,7 @@ public class PlanService {
                 .collect(Collectors.toMap(Product::getId, product -> product));
     }
 
+    @Transactional
     public Plan create(PlanRequest request) {
         Plan plan = new Plan(request.name(), request.startDate(), request.endDate());
         List<PlanCampaign> planCampaigns = new ArrayList<>();
@@ -39,7 +42,8 @@ public class PlanService {
 
         for (Campaign campaign : request.campaigns()) {
             Product product = products.get(campaign.productId());
-            planCampaigns.add(new PlanCampaign(product, plan, campaign.quantity(), campaign.estimateEffort()));
+            PlanCampaign planCampaign = new PlanCampaign(product, plan, campaign.quantity(), campaign.estimateEffort());
+            planCampaigns.add(planCampaign);
         }
         plan.setPlanCampaigns(planCampaigns);
         return planRepository.save(plan);
