@@ -6,75 +6,32 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 @Entity
+@Data
+@RequiredArgsConstructor
 public class Employee {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private final String name;
+    private final double hourlyWage;
 
-    private String name;
-
-    private double workingRate = 1;
-
-    private double hourlyWage;
+    @ManyToOne
+    @JoinColumn(name = "department_id", nullable = false)
+    private final Department department;
 
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private final Role role;
 
     public enum Role {
         MANAGER,
-        WORKER
-    }
-
-    public Employee() {
-    }
-
-    public Employee(String name, double hourlyWage, Role role) {
-        this.name = name;
-        this.hourlyWage = hourlyWage;
-        this.role = role;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public double getWorkingRate() {
-        return workingRate;
-    }
-
-    public void setWorkingRate(double workingRate) {
-        this.workingRate = workingRate;
-    }
-
-    public double getHourlyWage() {
-        return hourlyWage;
-    }
-
-    public void setHourlyWage(double hourlyWage) {
-        this.hourlyWage = hourlyWage;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
+        WORKER,
     }
 
 }

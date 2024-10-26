@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.example.scheduling_system.dto.Meta;
 import com.example.scheduling_system.dto.payload.request.EmployeeRequest;
 import com.example.scheduling_system.dto.payload.response.PaginateResponse;
+import com.example.scheduling_system.models.Department;
 import com.example.scheduling_system.models.Employee;
 import com.example.scheduling_system.repositories.EmployeeRepository;
 
@@ -18,9 +19,11 @@ import lombok.RequiredArgsConstructor;
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+    private final DepartmentService departmentService;
 
     public Employee create(EmployeeRequest request) {
-        var plan = new Employee(request.name(), request.hourlyWage(), request.role());
+        Department department = departmentService.findById(request.departmentId());
+        var plan = new Employee(request.name(), request.hourlyWage(), department, request.role());
         return employeeRepository.save(plan);
     }
 
