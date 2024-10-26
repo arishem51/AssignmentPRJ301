@@ -62,7 +62,7 @@ import { Router } from '@angular/router';
   ],
   template: `
     <div class="container">
-      <h4>Plan Detail</h4>
+      <h4>{{ pageTitle }}</h4>
       <div class="plan-form-wrapper" [formGroup]="planForm">
         <div class="plan-item-form">
           <mat-form-field>
@@ -178,6 +178,7 @@ export class ProductionPlanDetail {
     endDate: new FormControl(),
     campaigns: new FormArray([]),
   });
+  pageTitle = '';
   products: ProductResponse[] = [];
   filteredProducts: Observable<ProductResponse[]>[] = [];
 
@@ -208,6 +209,9 @@ export class ProductionPlanDetail {
         this.products = query.data?.data ?? [];
       }
     });
+    this.pageTitle = this.router.url.includes('create')
+      ? 'Create Plan'
+      : 'Plan Detail';
   }
 
   get campaigns(): FormArray {
