@@ -247,10 +247,10 @@ export class ProductionPlanDetail {
     const plan: Omit<PlanResponse, 'id'> = {
       name: this.planForm.get('name')?.value ?? '',
       startDate: new Date(
-        this.planForm.get('startDate')?.value.toString()
+        this.planForm.get('startDate')?.value?.toString()
       ).toISOString(),
       endDate: new Date(
-        this.planForm.get('endDate')?.value.toString()
+        this.planForm.get('endDate')?.value?.toString()
       ).toISOString(),
       status: 'OPEN',
       campaigns: this.campaigns.value.map(

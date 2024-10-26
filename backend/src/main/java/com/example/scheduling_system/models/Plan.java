@@ -36,9 +36,6 @@ public class Plan {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL)
-    private List<Schedule> schedules;
-
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PlanCampaign> planCampaigns;
 
