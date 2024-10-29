@@ -26,7 +26,6 @@ public class PlanService {
 
     private final PlanRepository planRepository;
     private final ProductService productService;
-    private final PlanCampaignService planCampaignService;
 
     private Map<Long, Product> getProductFromRequest(PlanRequest request) {
         List<Long> productIds = request.campaigns().stream().map(Campaign::productId).collect(Collectors.toList());
