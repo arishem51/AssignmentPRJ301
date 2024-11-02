@@ -12,6 +12,7 @@ import com.example.scheduling_system.dto.payload.response.PaginateResponse;
 import com.example.scheduling_system.models.Plan;
 import com.example.scheduling_system.models.PlanCampaign;
 import com.example.scheduling_system.models.Product;
+import com.example.scheduling_system.models.ScheduleCampaign;
 import com.example.scheduling_system.repositories.PlanRepository;
 import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 
@@ -26,6 +27,7 @@ public class PlanService {
 
     private final PlanRepository planRepository;
     private final ProductService productService;
+    private final ScheduleCampaignService scheduleCampaignService;
 
     private Map<Long, Product> getProductFromRequest(PlanRequest request) {
         List<Long> productIds = request.campaigns().stream().map(Campaign::productId).collect(Collectors.toList());
@@ -42,6 +44,10 @@ public class PlanService {
         for (Campaign campaign : request.campaigns()) {
             Product product = products.get(campaign.productId());
             PlanCampaign planCampaign = new PlanCampaign(product, plan, campaign.quantity(), campaign.estimateEffort());
+
+            List<ScheduleCampaign> scheduleCampaigns = scheduleCampaignService.schedulingCampaign(planCampaign);
+            planCampaign.setScheduleCampaigns(scheduleCampaigns);
+
             planCampaigns.add(planCampaign);
         }
         plan.setPlanCampaigns(planCampaigns);
