@@ -47,7 +47,6 @@ public class PlanService {
 
             List<ScheduleCampaign> scheduleCampaigns = scheduleCampaignService.schedulingCampaign(planCampaign);
             planCampaign.setScheduleCampaigns(scheduleCampaigns);
-
             planCampaigns.add(planCampaign);
         }
         plan.setPlanCampaigns(planCampaigns);

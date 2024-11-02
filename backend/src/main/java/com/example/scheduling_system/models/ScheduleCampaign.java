@@ -1,6 +1,8 @@
 package com.example.scheduling_system.models;
 
-import java.sql.Date;
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,15 +12,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "ScheduleCampaign")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor(force = true)
 @RequiredArgsConstructor
 public class ScheduleCampaign {
@@ -29,11 +29,12 @@ public class ScheduleCampaign {
 
     @ManyToOne
     @JoinColumn(name = "plan_campaign_id")
+    @JsonIgnore
     @NotNull
     private final PlanCampaign planCampaign;
 
     @NotNull
-    private final double quantity;
+    private final int quantity;
 
     @NotNull
     private final Date date;
