@@ -1,6 +1,7 @@
 package com.example.scheduling_system.models;
 
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -9,7 +10,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -39,8 +42,14 @@ public class ScheduleCampaign {
     @NotNull
     private final Date date;
 
-    @ManyToOne
-    @JoinColumn(name = "shift_id")
     @NotNull
-    private final Shift shift;
+    private final Date endDate;
+
+    @ManyToMany
+    @JoinTable(name = "schedule_campaign_shift", // Name of the join table
+            joinColumns = @JoinColumn(name = "schedule_campaign_id"), // Foreign key for ScheduleCampaign
+            inverseJoinColumns = @JoinColumn(name = "shift_id") // Foreign key for Shift
+    )
+    @NotNull
+    private final List<Shift> shifts;
 }

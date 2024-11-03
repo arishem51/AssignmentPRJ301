@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.stereotype.Service;
+
 import com.example.scheduling_system.models.PlanCampaign;
 import com.example.scheduling_system.models.ScheduleCampaign;
 import com.example.scheduling_system.models.Shift;
@@ -18,19 +19,6 @@ import lombok.RequiredArgsConstructor;
 public class ScheduleCampaignService {
     private final int SHIFT_PER_DAY = 3;
     private final ShiftService shiftService;
-
-    private ScheduleCampaign createScheduleCampaign(PlanCampaign planCampaign, int quantity, int shiftIndex,
-            Date startDate, Calendar calendar) {
-        int dayOffset = shiftIndex / SHIFT_PER_DAY;
-        int dailyShiftIndex = (shiftIndex + 1) % SHIFT_PER_DAY;
-
-        Shift shift = shiftService.getShiftByIndex(dailyShiftIndex);
-        calendar.setTime(startDate);
-        calendar.add(Calendar.DATE, dayOffset);
-        Date schDate = calendar.getTime();
-
-        return new ScheduleCampaign(planCampaign, quantity, schDate, shift);
-    }
 
     public List<ScheduleCampaign> schedulingCampaign(PlanCampaign planCampaign) {
         List<ScheduleCampaign> scheduleCampaigns = new ArrayList<>();
@@ -45,22 +33,71 @@ public class ScheduleCampaignService {
         int totalShifts = totalDays * SHIFT_PER_DAY;
         int baseProductPerShift = totalProducts / totalShifts;
         int remainingProducts = totalProducts % totalShifts;
-        int[] campaigns = new int[totalShifts];
 
-        if (totalProducts < totalShifts) {
-            for (int i = 0; i < totalProducts; i++) {
-                scheduleCampaigns.add(createScheduleCampaign(planCampaign, 1, i, startDate, calendar));
-            }
-            return scheduleCampaigns;
-        }
+        List<Shift> allShifts = this.shiftService.getAll();
 
-        for (int i = 0; i < totalShifts; i++) {
-            campaigns[i] = baseProductPerShift;
-            if (remainingProducts > 0) {
-                campaigns[i] += 1;
-                remainingProducts--;
+        // 31 / (8 * 3) = 24 = 1 remain 7
+        // 32 / (7 * 3) = 21 = 1 remain 11
+        // 30 / (8 * 3) = 24 = 1 remain 6
+        // 30 / (7 * 3) = 21 = 1 remain 9
+
+        // remain = 6 / 3 = 2 days = 2 groups, 1 group for all day have 3 shift that
+        // have quantity +1, the rest is base
+
+        if (remainingProducts % SHIFT_PER_DAY == 0) {
+            calendar.setTime(startDate);
+            calendar.add(Calendar.DATE, (remainingProducts / SHIFT_PER_DAY) - 1);
+            scheduleCampaigns.add(new ScheduleCampaign(planCampaign, baseProductPerShift + 1, startDate,
+                    calendar.getTime(),
+                    allShifts));
+            calendar.add(Calendar.DATE, 1);
+            scheduleCampaigns.add(new ScheduleCampaign(planCampaign, baseProductPerShift,
+                    calendar.getTime(), endDate,
+                    allShifts));
+
+        } else {
+            calendar.setTime(startDate);
+            // remain = x / 3 => y remain z shifts
+            // remain = 11 / 3 => 3 remain 2 shifts
+            calendar.setTime(startDate);
+            calendar.add(Calendar.DATE, (remainingProducts / SHIFT_PER_DAY) - 1);
+            scheduleCampaigns.add(new ScheduleCampaign(planCampaign, baseProductPerShift + 1, startDate,
+                    calendar.getTime(),
+                    allShifts));
+
+            int remainShifts = remainingProducts % SHIFT_PER_DAY;
+            calendar.add(Calendar.DATE, 1);
+
+            List<Shift> firstGroupShift = new ArrayList<>();
+            List<Shift> secondGroupShift = new ArrayList<>();
+
+            System.out.println("remaign shift: " + remainShifts + "day: " + remainingProducts);
+
+            if (remainShifts == 1) {
+                firstGroupShift.add(shiftService.getShiftByIndex(1));
+                secondGroupShift.add(shiftService.getShiftByIndex(2));
+                secondGroupShift.add(shiftService.getShiftByIndex(3));
+            } else {
+                // remainShift == 2
+                firstGroupShift.add(shiftService.getShiftByIndex(1));
+                firstGroupShift.add(shiftService.getShiftByIndex(2));
+                secondGroupShift.add(shiftService.getShiftByIndex(3));
             }
-            scheduleCampaigns.add(createScheduleCampaign(planCampaign, campaigns[i], i, startDate, calendar));
+
+            scheduleCampaigns.add(new ScheduleCampaign(planCampaign, baseProductPerShift + 1, calendar
+                    .getTime(),
+                    calendar.getTime(),
+                    firstGroupShift));
+            scheduleCampaigns.add(new ScheduleCampaign(planCampaign, baseProductPerShift, calendar
+                    .getTime(),
+                    calendar.getTime(),
+                    secondGroupShift));
+
+            calendar.add(Calendar.DATE, 1);
+            scheduleCampaigns.add(new ScheduleCampaign(planCampaign, baseProductPerShift, calendar
+                    .getTime(),
+                    endDate,
+                    allShifts));
         }
 
         return scheduleCampaigns;

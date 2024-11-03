@@ -17,7 +17,9 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { Observable, map, startWith } from 'rxjs';
 import { PlanService } from '../../services/plan.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MatCardModule } from '@angular/material/card';
+import { MatListModule } from '@angular/material/list';
 
 @Component({
   selector: 'app-production-plan-detail',
@@ -30,6 +32,8 @@ import { Router } from '@angular/router';
     CommonModule,
     MatDivider,
     MatAutocompleteModule,
+    MatCardModule,
+    MatListModule,
   ],
   providers: [provideNativeDateAdapter()],
   styles: [
@@ -106,7 +110,7 @@ import { Router } from '@angular/router';
             [formGroupName]="i"
             class="campaign-form-container"
           >
-            <h6>Product {{ i + 1 }}</h6>
+            <h6>Campaign {{ i + 1 }}</h6>
 
             <div>
               <mat-form-field appearance="fill">
@@ -154,18 +158,52 @@ import { Router } from '@angular/router';
                 (click)="deleteCampaignItem(i)"
                 color="warn"
                 mat-flat-button
+                *ngIf="showButtons"
               >
                 Delete
               </button>
             </div>
 
-            <mat-divider></mat-divider>
+            <div *ngIf="campaign.get('scheduleCampaigns')">
+              <mat-card class="campaign-card">
+                <mat-card-title>Schedule Campaigns</mat-card-title>
+                <mat-card-content>
+                  <mat-list>
+                    <mat-list-item
+                      *ngFor="
+                        let schedule of campaign.get('scheduleCampaigns')?.value
+                      "
+                    >
+                      <div>
+                        <p matLine>ID: {{ schedule.id }}</p>
+                        <p matLine>Quantity: {{ schedule.quantity }}</p>
+                        <p matLine>Date: {{ schedule.date | date }}</p>
+                        <p matLine>End Date: {{ schedule.endDate | date }}</p>
+                        <div>
+                          Shift:
+                          <div *ngFor="let shift of schedule.shifts">
+                            <p>{{ shift.id }}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </mat-list-item>
+                  </mat-list>
+                </mat-card-content>
+              </mat-card>
+            </div>
           </div>
         </div>
       </div>
 
-      <button mat-flat-button (click)="addCampaignItem()">Add Products</button>
-      <button style="margin-left: 8px" mat-flat-button (click)="createPlan()">
+      <button *ngIf="showButtons" mat-flat-button (click)="addCampaignItem()">
+        Add Products
+      </button>
+      <button
+        *ngIf="showButtons"
+        style="margin-left: 8px"
+        mat-flat-button
+        (click)="createPlan()"
+      >
         Create Plan
       </button>
     </div>
@@ -176,11 +214,13 @@ export class ProductionPlanDetail {
     name: new FormControl(''),
     startDate: new FormControl(),
     endDate: new FormControl(),
-    campaigns: new FormArray([]),
+    campaigns: new FormArray<FormGroup>([]),
   });
   pageTitle = '';
   products: ProductResponse[] = [];
   filteredProducts: Observable<ProductResponse[]>[] = [];
+  isPlanDetail = true;
+  showButtons = true;
 
   displayProductName(product: ProductResponse) {
     return product && product.name ? product.name : '';
@@ -200,13 +240,65 @@ export class ProductionPlanDetail {
     private productService: ProductsService,
     private planService: PlanService,
     private _snackBar: MatSnackBar,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     effect(() => {
       const querySignal = this.productService.getProductQuerySignal();
       const query = querySignal();
       if (query) {
         this.products = query.data?.data ?? [];
+      }
+
+      const id = this.route.snapshot.paramMap.get('id');
+      if (id && !Number.isNaN(id)) {
+        this.planService.detail(id).subscribe(({ data }) => {
+          this.planForm.disable();
+          this.campaigns.value?.forEach((item: FormControl) => item.disable());
+
+          this.showButtons = false;
+          const { name, startDate, endDate, planCampaigns } = data;
+          this.planForm.patchValue({ name, startDate, endDate });
+
+          const campaignControls = planCampaigns?.map(
+            (campaign) =>
+              new FormGroup({
+                id: new FormControl(campaign.id),
+                quantity: new FormControl(campaign.quantity),
+                estimateEffort: new FormControl(campaign.estimateEffort),
+                product: new FormControl(campaign.product),
+                scheduleCampaigns: new FormArray(
+                  campaign.scheduleCampaigns.map(
+                    (schedule) =>
+                      new FormGroup({
+                        id: new FormControl(schedule.id),
+                        quantity: new FormControl(schedule.quantity),
+                        date: new FormControl(schedule.date),
+                        endDate: new FormControl(schedule.endDate),
+                        shifts: new FormArray(
+                          schedule.shifts.map(
+                            (shift) =>
+                              new FormGroup({
+                                id: new FormControl(shift.id),
+                                name: new FormControl(shift.name),
+                                startTime: new FormControl(shift.startTime),
+                                endTime: new FormControl(shift.endTime),
+                              })
+                          )
+                        ),
+                      })
+                  )
+                ),
+              })
+          );
+
+          if (campaignControls) {
+            this.planForm.setControl(
+              'campaigns',
+              new FormArray(campaignControls)
+            );
+          }
+        });
       }
     });
     this.pageTitle = this.router.url.includes('create')
@@ -253,7 +345,7 @@ export class ProductionPlanDetail {
         this.planForm.get('endDate')?.value?.toString()
       ).toISOString(),
       status: 'OPEN',
-      campaigns: this.campaigns.value.map(
+      planCampaigns: this.campaigns.value.map(
         ({
           product,
           ...rest

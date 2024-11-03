@@ -27,18 +27,37 @@ export type ProductResponse = {
   img: string;
 };
 
-export type PlanCampaign = {
-  productId: number;
-  name: string;
-};
 export type PlanStatus = 'OPEN' | 'CLOSED';
+type Shift = {
+  id: number;
+  name: string;
+  startTime: string;
+  endTime: string;
+};
+
+type ScheduleCampaign = {
+  id: number;
+  quantity: number;
+  date: string;
+  endDate: string;
+  shifts: Shift[];
+};
+
+export type PlanCampaign = {
+  id: number;
+  product: ProductResponse;
+  quantity: number;
+  estimateEffort: number;
+  scheduleCampaigns: ScheduleCampaign[];
+};
+
 export type PlanResponse = {
   id: number;
   startDate: string;
   endDate: string;
   name: string;
   status: PlanStatus;
-  campaigns?: PlanCampaign[];
+  planCampaigns?: PlanCampaign[];
 };
 
 export type TQuery<TData> = {

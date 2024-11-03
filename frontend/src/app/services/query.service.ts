@@ -1,6 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable, signal } from '@angular/core';
-import { PaginateMetaResponse, PaginateResponse, TQuery } from '../types';
+import {
+  HttpServerResponse,
+  PaginateMetaResponse,
+  PaginateResponse,
+  TQuery,
+} from '../types';
 import { debounceTime, switchMap } from 'rxjs';
 import { toObservable } from '@angular/core/rxjs-interop';
 
@@ -88,5 +93,8 @@ export class QueryService<T extends { id: number }> {
   }
   delete(id: string) {
     return this.http.delete<T>(`/${this.basePath}/${id}`);
+  }
+  detail(id: string) {
+    return this.http.get<HttpServerResponse<T>>(`/${this.basePath}/${id}`);
   }
 }

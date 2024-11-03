@@ -1,5 +1,7 @@
 package com.example.scheduling_system.services;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import com.example.scheduling_system.models.Shift;
 import com.example.scheduling_system.repositories.ShiftRepository;
@@ -24,6 +26,10 @@ public class ShiftService {
 
     public Shift thirdShift() {
         return this.findById(3L);
+    }
+
+    public List<Shift> getAll() {
+        return shiftRepository.findAll();
     }
 
     public Shift getShiftByIndex(int index) {
