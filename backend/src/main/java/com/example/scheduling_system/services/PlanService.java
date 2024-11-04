@@ -6,13 +6,18 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import com.example.scheduling_system.dto.Campaign;
 import com.example.scheduling_system.dto.Meta;
+import com.example.scheduling_system.dto.WorkerShiftAllocation;
 import com.example.scheduling_system.dto.payload.request.PlanRequest;
+import com.example.scheduling_system.dto.payload.request.SchedulePlanRequest;
 import com.example.scheduling_system.dto.payload.response.ListPlanResponseItem;
 import com.example.scheduling_system.dto.payload.response.PaginateResponse;
+import com.example.scheduling_system.models.Employee;
 import com.example.scheduling_system.models.Plan;
 import com.example.scheduling_system.models.PlanCampaign;
 import com.example.scheduling_system.models.Product;
 import com.example.scheduling_system.models.ScheduleCampaign;
+import com.example.scheduling_system.models.Shift;
+import com.example.scheduling_system.models.WorkerScheduleCampaign;
 import com.example.scheduling_system.repositories.PlanRepository;
 import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 
@@ -20,6 +25,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +34,9 @@ public class PlanService {
     private final PlanRepository planRepository;
     private final ProductService productService;
     private final ScheduleCampaignService scheduleCampaignService;
+    private final ShiftService shiftService;
+    private final EmployeeService employeeService;
+    private final WorkerScheduleService workerScheduleService;
 
     private Map<Long, Product> getProductFromRequest(PlanRequest request) {
         List<Long> productIds = request.campaigns().stream().map(Campaign::productId).collect(Collectors.toList());
@@ -53,14 +62,6 @@ public class PlanService {
         return planRepository.save(plan);
     }
 
-    public Plan update(Long id, PlanRequest request) {
-        Plan plan = planRepository.findById(id).get();
-        // plan.setEndDate(request.endDate());
-        // plan.setStartDate(request.startDate());
-        // return planRepository.save(plan);
-        return plan;
-    }
-
     private ListPlanResponseItem mapPlanToPlanResponseItem(Plan plan) {
         return new ListPlanResponseItem(plan);
     }
@@ -78,4 +79,28 @@ public class PlanService {
     public Plan findById(Long id) {
         return planRepository.findById(id).orElseThrow(() -> new RuntimeJsonMappingException("Plan not found!"));
     }
+
+    public void scheduleWorkers(SchedulePlanRequest request) {
+        Set<WorkerShiftAllocation> workerAllocations = request.workerAllocation();
+        Shift shift = shiftService.findShiftByIndex(request.shiftId());
+        ScheduleCampaign sCampaign = scheduleCampaignService.findById(request.scheduleCampaignId());
+
+        if (sCampaign != null && shift != null) {
+            for (WorkerShiftAllocation allocation : workerAllocations) {
+                Long workerId = allocation.id();
+                int quantity = allocation.quantity();
+
+                Employee worker = employeeService.findById(workerId);
+
+                if (worker != null) {
+                    WorkerScheduleCampaign workerScheduleCampaign = new WorkerScheduleCampaign(
+                            worker,
+                            sCampaign,
+                            quantity);
+                    workerScheduleService.save(workerScheduleCampaign);
+                }
+            }
+        }
+    }
+
 }

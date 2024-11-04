@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import com.example.scheduling_system.models.PlanCampaign;
 import com.example.scheduling_system.models.ScheduleCampaign;
 import com.example.scheduling_system.models.Shift;
+import com.example.scheduling_system.repositories.ScheduleCampaignRepository;
+import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,6 +21,11 @@ import lombok.RequiredArgsConstructor;
 public class ScheduleCampaignService {
     private final int SHIFT_PER_DAY = 3;
     private final ShiftService shiftService;
+    private final ScheduleCampaignRepository schCampaignRepository;
+
+    public ScheduleCampaign findById(long id) {
+        return schCampaignRepository.findById(id).orElseThrow(() -> new RuntimeJsonMappingException("Not found!"));
+    }
 
     public List<ScheduleCampaign> schedulingCampaign(PlanCampaign planCampaign) {
         List<ScheduleCampaign> scheduleCampaigns = new ArrayList<>();
@@ -74,14 +81,14 @@ public class ScheduleCampaignService {
             System.out.println("remaign shift: " + remainShifts + "day: " + remainingProducts);
 
             if (remainShifts == 1) {
-                firstGroupShift.add(shiftService.getShiftByIndex(1));
-                secondGroupShift.add(shiftService.getShiftByIndex(2));
-                secondGroupShift.add(shiftService.getShiftByIndex(3));
+                firstGroupShift.add(shiftService.findShiftByIndex(1));
+                secondGroupShift.add(shiftService.findShiftByIndex(2));
+                secondGroupShift.add(shiftService.findShiftByIndex(3));
             } else {
                 // remainShift == 2
-                firstGroupShift.add(shiftService.getShiftByIndex(1));
-                firstGroupShift.add(shiftService.getShiftByIndex(2));
-                secondGroupShift.add(shiftService.getShiftByIndex(3));
+                firstGroupShift.add(shiftService.findShiftByIndex(1));
+                firstGroupShift.add(shiftService.findShiftByIndex(2));
+                secondGroupShift.add(shiftService.findShiftByIndex(3));
             }
 
             scheduleCampaigns.add(new ScheduleCampaign(planCampaign, baseProductPerShift + 1, calendar

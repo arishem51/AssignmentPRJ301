@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
@@ -52,4 +53,7 @@ public class ScheduleCampaign {
     )
     @NotNull
     private final List<Shift> shifts;
+
+    @OneToMany(mappedBy = "scheduleCampaign")
+    private List<WorkerScheduleCampaign> workerScheduleCampaigns;
 }

@@ -7,13 +7,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.scheduling_system.dto.payload.request.PlanRequest;
+import com.example.scheduling_system.dto.payload.request.SchedulePlanRequest;
 import com.example.scheduling_system.dto.payload.response.BodyResponse;
 import com.example.scheduling_system.dto.payload.response.ListPlanResponseItem;
 import com.example.scheduling_system.dto.payload.response.PaginateResponse;
@@ -62,14 +62,15 @@ public class PlanController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody PlanRequest request) {
+    @PostMapping("/schedule")
+    public ResponseEntity<BodyResponse<String>> schedule(@RequestBody SchedulePlanRequest request) {
         try {
-            var plan = planService.update(id, request);
-            return ResponseEntity.ok().body(new BodyResponse<>("Success", plan));
+            planService.scheduleWorkers(request);
+            return ResponseEntity.ok(new BodyResponse<>("Workers scheduled successfully"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new BodyResponse<>(e.getMessage()));
+                    .body(new BodyResponse<>("Schedule workers error: " + e.getMessage()));
         }
     }
+
 }

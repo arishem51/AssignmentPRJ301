@@ -32,7 +32,7 @@ public class ShiftService {
         return shiftRepository.findAll();
     }
 
-    public Shift getShiftByIndex(int index) {
+    public Shift findShiftByIndex(int index) {
         if (index == 1) {
             return this.firstShift();
         }
